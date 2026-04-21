@@ -7,162 +7,225 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
-:root{--bg:#f5f6fa;--sf:#ffffff;--sf2:#f0f1f5;--bd:#e2e4eb;--ac:#3b6ef8;--g:#00a87a;--w:#d97706;--r:#e03050;--t:#1a1d2e;--t2:#5a5f7a;--t3:#9ea3b8;--f:'DM Sans',sans-serif;--m:'DM Mono',monospace;}
+:root{
+  --bg:#f5f6fa;--sf:#ffffff;--sf2:#f0f1f5;--bd:#e2e4eb;
+  --ac:#3b6ef8;--g:#00a87a;--w:#d97706;--r:#e03050;
+  --t:#1a1d2e;--t2:#5a5f7a;--t3:#9ea3b8;
+  --f:'DM Sans',sans-serif;--m:'DM Mono',monospace;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;font-size:14px;overflow:hidden;}
 .shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:54px 1fr;height:100vh;}
-.top{grid-column:1/-1;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;padding:0 18px;}
-.logo{width:28px;height:28px;background:var(--ac);border-radius:8px;display:grid;place-items:center;font-weight:600;font-size:13px;color:#fff;}
-.top h1{font-size:13px;font-weight:500;}
-.live{font-size:11px;font-family:var(--m);background:rgba(0,229,160,.12);color:var(--g);border:1px solid rgba(0,229,160,.3);border-radius:4px;padding:2px 8px;margin-left:8px;}
+.top{grid-column:1/-1;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;padding:0 18px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+
+.top h1{font-size:13px;font-weight:500;color:var(--t);}
+.live{font-size:11px;font-family:var(--m);background:rgba(0,168,122,.1);color:var(--g);border:1px solid rgba(0,168,122,.3);border-radius:4px;padding:2px 8px;margin-left:8px;}
 .sub{font-size:11px;color:var(--t3);font-family:var(--m);margin-left:auto;}
 .side{background:var(--sf);border-right:1px solid var(--bd);overflow-y:auto;padding:12px 0;display:flex;flex-direction:column;gap:1px;}
 .nl{font-size:10px;font-weight:600;letter-spacing:.12em;color:var(--t3);padding:10px 14px 4px;text-transform:uppercase;}
 .ni{display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;font-size:13px;color:var(--t2);border-left:2px solid transparent;transition:background .12s;}
 .ni:hover{background:var(--sf2);color:var(--t);}
-.ni.on{background:rgba(79,124,255,.12);color:var(--ac);border-left-color:var(--ac);font-weight:500;}
+.ni.on{background:rgba(59,110,248,.08);color:var(--ac);border-left-color:var(--ac);font-weight:500;}
 .main{overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;}
 .sec{display:none;flex-direction:column;gap:16px;}
 .sec.on{display:flex;}
-.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:18px;}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
 .ch{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--bd);}
-.ch h2{font-size:13px;font-weight:500;}
-.tag{font-size:10px;font-family:var(--m);background:rgba(79,124,255,.12);color:var(--ac);border:1px solid rgba(79,124,255,.25);border-radius:4px;padding:2px 7px;margin-left:auto;}
+.ch h2{font-size:13px;font-weight:500;color:var(--t);}
+.tag{font-size:10px;font-family:var(--m);background:rgba(59,110,248,.08);color:var(--ac);border:1px solid rgba(59,110,248,.2);border-radius:4px;padding:2px 7px;margin-left:auto;}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 .f{display:flex;flex-direction:column;gap:4px;}
 .f label{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;}
 .f input,.f select,.f textarea{background:var(--bg);border:1px solid var(--bd);border-radius:7px;color:var(--t);font-family:var(--f);font-size:13px;padding:7px 10px;outline:none;transition:border-color .12s;width:100%;}
-.f input:focus,.f select:focus{border-color:var(--ac);}
-.f select option{background:var(--sf2);}
+.f input:focus,.f select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(59,110,248,.1);}
+.f select option{background:var(--sf);}
 .br{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-.btn{padding:8px 16px;border-radius:7px;border:none;font-family:var(--f);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;}
-.bp{background:var(--ac);color:#fff;}.bp:hover{background:#3d6aee;}
+.btn{padding:8px 16px;border-radius:7px;border:none;font-family:var(--f);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:6px;}
+.bp{background:var(--ac);color:#fff;}.bp:hover{background:#2a5ce8;}
 .bs{background:var(--sf2);color:var(--t);border:1px solid var(--bd);}.bs:hover{border-color:var(--ac);color:var(--ac);}
-.bg{background:var(--g);color:#0d0f14;}.bg:hover{background:#00cc8e;}
+.bg2{background:var(--g);color:#fff;}.bg2:hover{background:#008f68;}
 .bsm{padding:5px 12px;font-size:12px;}
-.ep{background:var(--bg);border:1px solid var(--bd);border-radius:8px;font-family:var(--m);font-size:12px;line-height:1.7;padding:14px;white-space:pre-wrap;color:var(--t2);min-height:100px;max-height:300px;overflow-y:auto;}
+.ep{background:var(--bg);border:1px solid var(--bd);border-radius:8px;font-family:var(--m);font-size:12px;line-height:1.7;padding:14px;white-space:pre-wrap;color:var(--t2);min-height:100px;max-height:280px;overflow-y:auto;}
 .sr{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.sc{background:var(--sf2);border:1px solid var(--bd);border-radius:9px;padding:12px 14px;}
+.sc{background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:12px 14px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
 .sl{font-size:10px;color:var(--t3);margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;}
 .sv{font-size:24px;font-weight:300;color:var(--t);font-family:var(--m);}
 .ss{font-size:11px;color:var(--t3);margin-top:1px;}
 .al{padding:9px 12px;border-radius:8px;font-size:12px;line-height:1.5;}
-.aw{background:rgba(255,184,0,.08);border:1px solid rgba(255,184,0,.2);color:var(--w);}
-.ai{background:rgba(79,124,255,.08);border:1px solid rgba(79,124,255,.2);color:var(--ac);}
+.aw{background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2);color:var(--w);}
+.ai{background:rgba(59,110,248,.06);border:1px solid rgba(59,110,248,.15);color:var(--ac);}
+.ag{background:rgba(0,168,122,.07);border:1px solid rgba(0,168,122,.2);color:var(--g);}
 .search-wrap{position:relative;}
 .search-wrap input{padding-left:30px !important;}
 .search-ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none;}
-.alu-list{display:flex;flex-direction:column;gap:6px;max-height:360px;overflow-y:auto;}
+.alu-list{display:flex;flex-direction:column;gap:5px;max-height:320px;overflow-y:auto;}
 .alu-card{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;cursor:pointer;transition:border-color .12s;}
 .alu-card:hover{border-color:var(--ac);}
-.alu-card.sel{border-color:var(--ac);background:rgba(79,124,255,.06);}
+.alu-card.sel{border-color:var(--ac);background:rgba(59,110,248,.04);}
 .alu-name{font-size:13px;font-weight:500;color:var(--t);}
 .alu-meta{font-size:11px;color:var(--t3);margin-top:2px;}
 .dots{display:flex;gap:5px;margin-top:6px;}
 .dot{width:8px;height:8px;border-radius:50%;}
 .dg{background:var(--g);}.dw{background:var(--w);}.dx{background:var(--bd);}
-.dg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;}
-.dk{color:var(--t3);}.dv{color:var(--t);}
+.dg2{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12px;align-items:start;}
+.dk{color:var(--t3);white-space:nowrap;padding:3px 0;}
+.dv{color:var(--t);padding:3px 0;word-break:break-word;}
 .tbl{width:100%;border-collapse:collapse;font-size:12px;}
 .tbl th{text-align:left;padding:6px 8px;color:var(--t3);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--bd);}
-.tbl td{padding:7px 8px;border-bottom:1px solid rgba(42,47,61,.4);}
+.tbl td{padding:7px 8px;border-bottom:1px solid var(--bd);color:var(--t);}
 .tbl tr:last-child td{border-bottom:none;}
-.tbl tr:hover td{background:rgba(255,255,255,.015);}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
-.chip{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--bd);color:var(--t2);transition:all .12s;}
-.chip.c1{background:rgba(79,124,255,.14);color:var(--ac);border-color:var(--ac);}
-.chip.c2{background:rgba(255,184,0,.1);color:var(--w);border-color:var(--w);}
-.chip.c3{background:rgba(0,229,160,.1);color:var(--g);border-color:var(--g);}
+.tbl tr:hover td{background:var(--sf2);}
+/* Upload zone */
+.upload-zone{border:2px dashed var(--bd);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:border-color .15s;background:var(--bg);}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--ac);background:rgba(59,110,248,.03);}
+.upload-zone h3{font-size:14px;font-weight:500;color:var(--t);margin-bottom:6px;}
+.upload-zone p{font-size:12px;color:var(--t3);}
+/* Seguimiento modal */
+.modal-bg{position:fixed;inset:0;background:rgba(26,29,46,.4);display:flex;align-items:center;justify-content:center;z-index:100;display:none;}
+.modal-bg.on{display:flex;}
+.modal{background:var(--sf);border-radius:12px;padding:24px;width:480px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.12);}
+.modal h3{font-size:14px;font-weight:500;margin-bottom:16px;color:var(--t);}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--bd);}
+/* Estado chips */
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--bd);color:var(--t2);transition:all .12s;background:var(--sf);}
+.chip.on{background:rgba(59,110,248,.1);color:var(--ac);border-color:var(--ac);}
+/* Toast */
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
-#toast{position:fixed;bottom:20px;right:20px;background:var(--g);color:#0d0f14;padding:9px 16px;border-radius:7px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;z-index:999;}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--t);color:var(--sf);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;z-index:999;}
 #toast.on{opacity:1;transform:translateY(0);}
+.badge-mod{font-size:10px;background:rgba(217,119,6,.12);color:var(--w);border:1px solid rgba(217,119,6,.3);border-radius:3px;padding:1px 5px;margin-left:6px;}
+/* Rúbrica */
 .rub-item{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bd);}
 </style>
 </head>
 <body>
 <div class="shell">
   <header class="top">
-    <div class="logo">U</div>
+    <img src="data:image/png;base64,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" onclick="go('carga', document.querySelector('.ni:first-child'))" style="height:32px;cursor:pointer;object-fit:contain;" title="Inicio" alt="UNIE">
     <h1>Agente Tutor Academico &middot; Bruno Sanchez Gonzalez</h1>
-<span class="live">24 alumnos</span>    <span class="sub">MSEC 2025/26 &middot; UNIE</span>
+    <span class="live" id="badge-n">Sin Excel cargado</span>
+    <span class="sub">MSEC 2025/26 &middot; UNIE</span>
   </header>
   <nav class="side">
-    <div class="nl">Alumnos</div>
-    <div class="ni on" onclick="go('buscar',this)">&#9672; Buscar alumno</div>
+    <div class="nl">Datos</div>
+    <div class="ni on" onclick="go('carga',this)">&#8593; Cargar Excel</div>
+    <div class="ni" onclick="go('buscar',this)">&#9672; Mis alumnos</div>
     <div class="ni" onclick="go('panel',this)">&#9678; Panel seguimiento</div>
     <div class="nl">Correos</div>
-    <div class="ni" onclick="go('ccentro',this)">&#9689; Tutor de centro</div>
-    <div class="ni" onclick="go('calumno',this)">&#9679; Alumno/a</div>
+    <div class="ni" onclick="go('ccentro',this)">&#9993; Tutor de centro</div>
+    <div class="ni" onclick="go('calumno',this)">&#9993; Alumno/a</div>
     <div class="nl">Gestion</div>
     <div class="ni" onclick="go('autorizar',this)">&#10022; Autorizar inicio</div>
-    <div class="ni" onclick="go('excel',this)">&#8862; Exportar Excel</div>
     <div class="nl">Evaluacion</div>
     <div class="ni" onclick="go('rubrica',this)">&#9680; Rubrica Memoria I</div>
   </nav>
   <main class="main">
 
-    <div id="s-buscar" class="sec on">
-      <div class="sr">
-<div class="sc"><div class="sl">Mis alumnos</div><div class="sv">24</div><div class="ss">asignados a Bruno</div></div><div class="sc"><div class="sl">1er correo enviado</div><div class="sv">14</div><div class="ss">de 24</div></div><div class="sc"><div class="sl">En Cataluna</div><div class="sv">4</div><div class="ss">videollamada oblig.</div></div><div class="sc"><div class="sl">3 correos completos</div><div class="sv">2</div><div class="ss">seguimiento cerrado</div></div>      </div>
+    <!-- CARGA EXCEL -->
+    <div id="s-carga" class="sec on">
       <div class="card">
-        <div class="ch"><h2>Buscar alumno/a</h2><span class="tag">DATOS REALES EXCEL</span></div>
-        <div class="fg" style="margin-bottom:12px;">
-          <div class="f">
-            <label>Nombre, apellido o centro</label>
-            <div class="search-wrap">
-              <span class="search-ic">&#128269;</span>
-              <input id="q" type="text" placeholder="Ej: Garcia, Colegio Claret..." oninput="buscar()">
-            </div>
-          </div>
-          <div class="f">
-            <label>Filtrar por estado</label>
-            <div class="chips">
-              <div class="chip c1" id="fq-all" onclick="filtro('all')">Todos</div>
-              <div class="chip" id="fq-0" onclick="filtro('0')">Sin correos</div>
-              <div class="chip" id="fq-1" onclick="filtro('1')">1 correo</div>
-              <div class="chip" id="fq-2" onclick="filtro('2')">2 correos</div>
-              <div class="chip" id="fq-cat" onclick="filtro('cat')">Cataluna</div>
-            </div>
-          </div>
+        <div class="ch"><h2>Cargar Excel de seguimiento UNIE</h2><span class="tag">PASO 1</span></div>
+        <div class="al ai" style="margin-bottom:14px;">Sube el Excel oficial de seguimiento del Practicum MSEC. La app cargara automaticamente tus 24 alumnos y podras registrar acciones que se guardaran en el Excel al descargarlo.</div>
+        <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="onDrop(event)">
+          <div style="font-size:28px;margin-bottom:8px;">&#128196;</div>
+          <h3>Arrastra el Excel aqui o haz clic para seleccionarlo</h3>
+          <p>Archivo .xlsx del seguimiento MSEC UNIE</p>
         </div>
-        <div style="font-size:11px;color:var(--t3);margin-bottom:8px;" id="rcount"></div>
-        <div class="alu-list" id="alist"></div>
+        <input type="file" id="file-input" accept=".xlsx" style="display:none" onchange="onFileSelect(event)">
+        <div id="carga-status" style="margin-top:12px;font-size:13px;color:var(--t3);"></div>
       </div>
-      <div class="card" id="adetail" style="display:none;">
-        <div class="ch"><h2 id="d-nom">-</h2><span class="tag" id="d-tag">-</span></div>
-        <div class="dg2" id="d-grid"></div>
-        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);">
-          <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:8px;">Estado seguimiento</div>
-          <div id="d-seg"></div>
-        </div>
-        <div class="br" style="margin-top:12px;">
-          <button class="btn bs bsm" onclick="cargaCentro()">Cargar en correo tutor</button>
-          <button class="btn bs bsm" onclick="cargaAlumno()">Cargar en correo alumno</button>
-          <button class="btn bs bsm" onclick="cargaAuth()">Cargar en autorizacion</button>
+      <div class="card" id="carga-ok" style="display:none;">
+        <div class="ch"><h2>Excel cargado correctamente</h2><span class="tag" style="background:rgba(0,168,122,.1);color:var(--g);border-color:rgba(0,168,122,.3);">LISTO</span></div>
+        <div class="sr" id="stats-carga"></div>
+        <div class="br" style="margin-top:14px;">
+          <button class="btn bp" onclick="go('buscar',document.querySelector('.ni:nth-child(3)'))">Ver mis alumnos &#8594;</button>
+          <button class="btn bg2" onclick="descargarExcel()">&#8595; Descargar Excel actualizado</button>
         </div>
       </div>
     </div>
 
+    <!-- MIS ALUMNOS -->
+    <div id="s-buscar" class="sec">
+      <div class="sr" id="stats-buscar"></div>
+      <div class="card">
+        <div class="ch"><h2>Mis alumnos</h2><span class="tag">DATOS EXCEL REAL</span></div>
+        <div class="fg" style="margin-bottom:12px;">
+          <div class="f">
+            <label>Buscar</label>
+            <div class="search-wrap">
+              <span class="search-ic">&#128269;</span>
+              <input id="q" type="text" placeholder="Nombre, apellido, centro..." oninput="buscar()">
+            </div>
+          </div>
+          <div class="f">
+            <label>Estado</label>
+            <select id="q-est" onchange="buscar()">
+              <option value="">Todos</option>
+              <option value="0">Sin ningun correo</option>
+              <option value="1">Solo 1er correo</option>
+              <option value="2">Hasta 2o correo</option>
+              <option value="3">3 correos completos</option>
+              <option value="cat">En Cataluna</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:8px;" id="rcount">Carga el Excel primero</div>
+        <div class="alu-list" id="alist"></div>
+      </div>
+      <div class="card" id="adetail" style="display:none;">
+        <div class="ch">
+          <h2 id="d-nom">-</h2>
+          <span class="tag" id="d-tag">-</span>
+          <span class="badge-mod" id="d-mod" style="display:none;">Modificado</span>
+        </div>
+        <div class="dg2" id="d-grid"></div>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);">
+          <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:10px;">Seguimiento de correos</div>
+          <div id="d-seg"></div>
+        </div>
+        <div class="br" style="margin-top:12px;">
+          <button class="btn bp bsm" onclick="abrirRegistro(1)">+ Registrar 1er correo</button>
+          <button class="btn bp bsm" onclick="abrirRegistro(2)">+ Registrar 2o correo</button>
+          <button class="btn bp bsm" onclick="abrirRegistro(3)">+ Registrar 3er correo</button>
+          <button class="btn bs bsm" onclick="abrirRegistroAlumno()">+ Correo alumno/a</button>
+        </div>
+        <div class="br" style="margin-top:6px;">
+          <button class="btn bs bsm" onclick="cargaCentro()">&#9993; Generar correo tutor</button>
+          <button class="btn bs bsm" onclick="cargaAlumno()">&#9993; Generar correo alumno</button>
+          <button class="btn bs bsm" onclick="cargaAuth()">&#10022; Generar autorizacion</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL -->
     <div id="s-panel" class="sec">
       <div class="card">
-        <div class="ch"><h2>Panel global de seguimiento</h2><span class="tag">MIS 24 ALUMNOS</span></div>
-        <div class="f" style="margin-bottom:12px;">
-          <label>Filtrar por estado</label>
-          <select id="p-est" onchange="renderPanel()">
-            <option value="">Todos</option>
-            <option value="0">Sin ningun correo</option>
-            <option value="1">Solo 1er correo</option>
-            <option value="2">Hasta 2o correo</option>
-            <option value="3">3 correos completos</option>
-            <option value="cat">En Cataluna</option>
-          </select>
+        <div class="ch"><h2>Panel de seguimiento</h2><span class="tag">MIS ALUMNOS</span></div>
+        <div class="fg" style="margin-bottom:12px;">
+          <div class="f"><label>Filtrar por estado</label>
+            <select id="p-est" onchange="renderPanel()">
+              <option value="">Todos</option>
+              <option value="0">Sin ningun correo</option>
+              <option value="1">Solo 1er correo</option>
+              <option value="2">Hasta 2o correo</option>
+              <option value="3">3 correos completos</option>
+              <option value="cat">En Cataluna</option>
+            </select>
+          </div>
+          <div class="f" style="justify-content:flex-end;align-items:flex-end;">
+            <button class="btn bg2 bsm" onclick="descargarExcel()">&#8595; Descargar Excel actualizado</button>
+          </div>
         </div>
         <div style="overflow-x:auto;">
           <table class="tbl">
             <thead><tr>
-              <th>Alumno/a</th><th>Especialidad</th><th>Centro</th><th>Localidad</th>
-              <th>C1</th><th>C2</th><th>C3</th><th>Alu</th><th>Cat</th>
+              <th>Alumno/a</th><th>Especialidad</th><th>Centro</th><th>C1</th><th>C2</th><th>C3</th><th>Alu</th><th>Cat</th><th>Accion</th>
             </tr></thead>
             <tbody id="ptbody"></tbody>
           </table>
@@ -171,66 +234,78 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;font-
       </div>
     </div>
 
+    <!-- CORREO TUTOR CENTRO -->
     <div id="s-ccentro" class="sec">
       <div class="card">
         <div class="ch"><h2>Correo al tutor/a del centro</h2><span class="tag">3 MOMENTOS</span></div>
         <div class="fg">
           <div class="f"><label>Momento</label>
             <select id="cc-t" onchange="pvC()">
-              <option value="i">1 Inicio (presentacion + confirmar fechas)</option>
-              <option value="m">2 Intermedio (actitud + videollamada?)</option>
-              <option value="f">3 Final (valoracion + doc. evaluacion)</option>
+              <option value="i">1 — Inicio (presentacion + confirmar fechas)</option>
+              <option value="m">2 — Intermedio (actitud + videollamada?)</option>
+              <option value="f">3 — Final (valoracion + doc. evaluacion)</option>
             </select>
           </div>
-          <div class="f"><label>Tutor/a del centro</label><input id="cc-tu" type="text" placeholder="Nombre tutor/a" oninput="pvC()"></div>
-          <div class="f"><label>Alumno/a</label><input id="cc-al" type="text" placeholder="Nombre alumno/a" oninput="pvC()"></div>
+          <div class="f"><label>Email tutor/a del centro</label><input id="cc-email" type="email" placeholder="email@centro.es" oninput="pvC()"></div>
+          <div class="f"><label>Nombre tutor/a del centro</label><input id="cc-tu" type="text" placeholder="Nombre tutor/a" oninput="pvC()"></div>
+          <div class="f"><label>Nombre alumno/a</label><input id="cc-al" type="text" placeholder="Nombre alumno/a" oninput="pvC()"></div>
           <div class="f"><label>Centro educativo</label><input id="cc-ce" type="text" placeholder="Nombre del centro" oninput="pvC()"></div>
-          <div class="f"><label>Tu nombre</label><input id="cc-yo" type="text" value="Bruno Sanchez Gonzalez" oninput="pvC()"></div>
           <div class="f"><label>Alumno/a en Cataluna?</label>
             <select id="cc-cat" onchange="pvC()"><option value="no">No</option><option value="si">Si (videollamada obligatoria)</option></select>
           </div>
         </div>
       </div>
-      <div class="card"><div class="ch"><h2>Vista previa</h2></div>
-        <div class="ep" id="pvc">Completa los campos...</div>
-        <div class="br"><button class="btn bg bsm" onclick="abrirMailto('pvc','cc-tu','cc-t')">&#9993; Abrir en email</button><button class="btn bs bsm" onclick="cp('pvc')">Copiar texto</button></div>
+      <div class="card">
+        <div class="ch"><h2>Vista previa</h2></div>
+        <div class="ep" id="pvc">Completa los campos o selecciona un alumno desde Mis alumnos...</div>
+        <div class="br">
+          <button class="btn bg2" onclick="mailtoC()">&#9993; Abrir en email</button>
+          <button class="btn bs bsm" onclick="cp('pvc')">Copiar texto</button>
+        </div>
       </div>
     </div>
 
+    <!-- CORREO ALUMNO -->
     <div id="s-calumno" class="sec">
       <div class="card">
         <div class="ch"><h2>Correo al alumno/a</h2><span class="tag">SEGUIMIENTO</span></div>
         <div class="fg">
+          <div class="f"><label>Email alumno/a</label><input id="ca-email" type="email" placeholder="alumno@student.universidadunie.com" oninput="pvA()"></div>
           <div class="f"><label>Nombre alumno/a</label><input id="ca-n" type="text" placeholder="Nombre" oninput="pvA()"></div>
-          <div class="f"><label>Tu nombre</label><input id="ca-yo" type="text" value="Bruno Sanchez Gonzalez" oninput="pvA()"></div>
           <div class="f"><label>Centro</label><input id="ca-c" type="text" placeholder="Centro" oninput="pvA()"></div>
-          <div class="f"><label>Tipo</label>
+          <div class="f"><label>Tipo de correo</label>
             <select id="ca-t" onchange="pvA()">
               <option value="seg">Seguimiento intermedio</option>
               <option value="ini">Bienvenida / Inicio</option>
-              <option value="mem">Recordatorio memorias</option>
+              <option value="mem">Recordatorio entrega memorias</option>
             </select>
           </div>
         </div>
       </div>
-      <div class="card"><div class="ch"><h2>Vista previa</h2></div>
+      <div class="card">
+        <div class="ch"><h2>Vista previa</h2></div>
         <div class="ep" id="pva">Completa los campos...</div>
-        <div class="br"><button class="btn bg bsm" onclick="abrirMailto('pva','ca-n','ca-t')">&#9993; Abrir en email</button><button class="btn bs bsm" onclick="cp('pva')">Copiar texto</button></div>
+        <div class="br">
+          <button class="btn bg2" onclick="mailtoA()">&#9993; Abrir en email</button>
+          <button class="btn bs bsm" onclick="cp('pva')">Copiar texto</button>
+        </div>
       </div>
     </div>
 
+    <!-- AUTORIZAR -->
     <div id="s-autorizar" class="sec">
       <div class="al aw">Verifica SIEMPRE la Gestion Finalizada en el Excel antes de autorizar. Fecha minima: 12 enero 2026.</div>
       <div class="card">
         <div class="ch"><h2>Autorizacion de inicio</h2><span class="tag">VERIFICACION</span></div>
         <div class="fg">
+          <div class="f"><label>Email alumno/a</label><input id="a-email" type="email" placeholder="Email alumno/a"></div>
           <div class="f"><label>Nombre alumno/a</label><input id="a-n" type="text" placeholder="Nombre completo"></div>
           <div class="f"><label>Especialidad</label><input id="a-e" type="text" placeholder="Especialidad"></div>
           <div class="f"><label>Centro</label><input id="a-c" type="text" placeholder="Centro"></div>
           <div class="f"><label>Tutor/a del centro</label><input id="a-t" type="text" placeholder="Nombre tutor/a"></div>
           <div class="f"><label>Fecha inicio</label><input id="a-fi" type="date"></div>
           <div class="f"><label>Fecha fin</label><input id="a-ff" type="date"></div>
-          <div class="f"><label>Horario</label><input id="a-h" type="text" placeholder="Ej: L-V 8-14h"></div>
+          <div class="f"><label>Horario</label><input id="a-h" type="text" placeholder="L-V 8-14h"></div>
           <div class="f"><label>Gestion Finalizada?</label>
             <select id="a-g"><option value="">Seleccionar</option><option value="si">Si, confirmado</option><option value="no">No</option></select>
           </div>
@@ -240,49 +315,196 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;font-
       <div class="card" id="out-auth" style="display:none;">
         <div class="ch"><h2>Respuesta</h2><span class="tag" id="auth-tag"></span></div>
         <div class="ep" id="pv-auth"></div>
-        <div class="br"><button class="btn bg bsm" onclick="abrirMailtoAuth()">&#9993; Abrir en email</button><button class="btn bs bsm" onclick="cp('pv-auth')">Copiar texto</button></div>
+        <div class="br">
+          <button class="btn bg2" onclick="mailtoAuth()">&#9993; Abrir en email</button>
+          <button class="btn bs bsm" onclick="cp('pv-auth')">Copiar texto</button>
+        </div>
       </div>
     </div>
 
-    <div id="s-excel" class="sec">
-      <div class="al ai">Exporta tus 24 alumnos con el formato de columnas oficial del Excel de seguimiento UNIE.</div>
-      <div class="card">
-        <div class="ch"><h2>Exportar a Excel</h2><span class="tag">FORMATO UNIE</span></div>
-<p style="font-size:13px;color:var(--t2);margin-bottom:12px;">Se exportaran 24 alumnos (Bruno Sanchez Gonzalez).</p>        <div class="br"><button class="btn bg" onclick="exportar()">Descargar Excel (.xlsx)</button></div>
-      </div>
-    </div>
-
+    <!-- RUBRICA -->
     <div id="s-rubrica" class="sec">
       <div class="card">
-        <div class="ch"><h2>Rubrica Memoria I de Observacion</h2><span class="tag">PONDERACION</span></div>
+        <div class="ch"><h2>Rubrica Memoria I — Observacion</h2><span class="tag">PONDERACION</span></div>
         <div id="rub-items"></div>
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;">
           <span style="font-size:13px;color:var(--t2);">Nota estimada</span>
           <span id="rub-nota" style="font-size:28px;font-family:var(--m);font-weight:300;color:var(--ac);">-</span>
         </div>
-        <div class="br">
-          <button class="btn bp" onclick="calcRub()">Calcular nota</button>
-          <button class="btn bs bsm" onclick="resetRub()">Reiniciar</button>
-        </div>
+        <div class="br"><button class="btn bp" onclick="calcRub()">Calcular nota</button><button class="btn bs bsm" onclick="resetRub()">Reiniciar</button></div>
       </div>
       <div class="card" id="out-rub" style="display:none;">
         <div class="ch"><h2>Feedback para el alumno/a</h2></div>
         <div class="ep" id="pv-rub"></div>
-        <div class="br"><button class="btn bg bsm" onclick="cp('pv-rub')">Copiar feedback</button></div>
+        <div class="br"><button class="btn bs bsm" onclick="cp('pv-rub')">Copiar feedback</button></div>
       </div>
     </div>
 
   </main>
 </div>
-<div id="toast"></div>
-<script>
-var ALUMNOS=
-[{"ap1":"\u00c1lvarez","ap2":"Cid","nombre":"Antonio","esp":"Geograf\u00eda e Historia","email":"aalvarezc@student.universidadunie.com","centro":"","localidad":"","tutorCentroNombre":"","tutorCentroEmail":"","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"","fFin":"","horario":"","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"46357","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Bravo","ap2":"Andres","nombre":"Carolina","esp":"Lengua Castellana y Literatura","email":"cbravoa@student.universidadunie.com","centro":"Colegio de La Devesa Elche","localidad":"Elche / Alicante","tutorCentroNombre":"Gardenia Murcia Barba","tutorCentroEmail":"gmurcia@gruposorolla.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-02-02","fFin":"14/04/2026","horario":"9-13h","c1f":"20/02/2026","c1r":"25/02/2026","c1a":"S\u00ed","c1ct":"S\u00ed","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Casillas","ap2":"Lorenzo","nombre":"Lucia","esp":"Geograf\u00eda e Historia","email":"lcasillasl@student.universidadunie.com","centro":"\u00cdES Zurbar\u00e1n","localidad":"Badajoz / Badajoz","tutorCentroNombre":"Ernesto Ortiz Gonz\u00e1lez","tutorCentroEmail":"eortizg04@educarex.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-12-01","fFin":"2026-06-03","horario":"8-14h","c1f":"28/01/2026","c1r":"30/01/2026","c1a":"S\u00ed","c1ct":"S\u00ed","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Ciuraneta","ap2":"Catalan","nombre":"Gisela-Gyana","esp":"Geograf\u00eda e Historia","email":"gciuranetac@student.universidadunie.com","centro":"Fundaci\u00f3n\u00c1ngelesGalino - Escola Arrels","localidad":"Barcelona / Barcelona","tutorCentroNombre":"Roser Roca Queralt","tutorCentroEmail":"rocar@esxola-arrels.cat","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-11-03","fFin":"2026-01-06","horario":"8h a 13h30","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"si","obs":""},{"ap1":"de los Reyes","ap2":"Morales","nombre":"Alejandro","esp":"Geograf\u00eda e Historia","email":"adelosreyesm@student.universidadunie.com","centro":"Colegio Beaterio de la Sant\u00edsima Trinidad","localidad":"Sevilla / Sevilla","tutorCentroNombre":"Juan Carlos Gar\u00eda Moreno","tutorCentroEmail":"jcgarcia@centrosfest.net","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"23/02/2026","fFin":"13/02/2026","horario":"8-14h","c1f":"20/02/2026","c1r":"25/02/2026","c1a":"S\u00ed","c1ct":"S\u00ed","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Fernandez","ap2":"Garcia","nombre":"Lucia","esp":"Geograf\u00eda e Historia","email":"lfernandezg2@student.universidadunie.com","centro":"Colegio Santa Luisa de Marillac","localidad":"Avil\u00e9s / Asturias","tutorCentroNombre":"Isabel Gonz\u00e1lez Panera","tutorCentroEmail":"mabel@luisademarillachcsvpgijono365.educamos.com","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-12-01","fFin":"17/03/2026","horario":"M-V 9.30-14.30","c1f":"28/01/2026","c1r":"2026-04-02","c1a":"S\u00ed","c1ct":"S\u00ed","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Garcia","ap2":"del Peso","nombre":"Valeria","esp":"Geograf\u00eda e Historia","email":"vgarciad@student.universidadunie.com","centro":"IES CARPETANIA","localidad":"Yepes / Toledo","tutorCentroNombre":"Jos\u00e9 Enrique Gonz\u00e1lez-Mart\u00edn","tutorCentroEmail":"jegm03@educastillalamancha.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-09-02","fFin":"27/03/2026","horario":"8.30-14.30h","c1f":"28/01/2026","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"30/03/2026","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Garc\u00eda","ap2":"de la Paz","nombre":"Carlos","esp":"Lengua Castellana y Literatura","email":"cgarciad@student.universidadunie.com","centro":"IES Ram\u00f3n Giraldo","localidad":"Villanueva de los Infantes / Ciudad Real","tutorCentroNombre":"\u00c1ngel Almarcha Romero","tutorCentroEmail":"sssr5@educastillalamancha.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-12-01","fFin":"15/05/2026","horario":"9-14h","c1f":"28/01/2026","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Gatnaoui","ap2":"Marin","nombre":"Ismael","esp":"Geograf\u00eda e Historia","email":"igatnaouim@student.universidadunie.com","centro":"","localidad":"","tutorCentroNombre":"","tutorCentroEmail":"","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"","fFin":"","horario":"","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Gomez","ap2":"Gonzalez","nombre":"Iker Manuel","esp":"Geograf\u00eda e Historia","email":"igomezg@student.universidadunie.com","centro":"LAR","localidad":"Rebull\u00f3n / Pontevedra","tutorCentroNombre":"Manuel Ledo Loyola","tutorCentroEmail":"manuel.ledo@colegiolar.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-12-01","fFin":"25/03/2026","horario":"L-J 10-15h","c1f":"28/01/2026","c1r":"29/01/2026","c1a":"S\u00ed","c1ct":"S\u00ed","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Halcon","ap2":"Escudero","nombre":"Castianira M\u00edriam","esp":"Lengua Castellana y Literatura","email":"chalcone@student.universidadunie.com","centro":"Colegio Mar\u00eda Auxiliadora","localidad":"Torrent / Valencia","tutorCentroNombre":"Cristina Pe\u00f1arrubia N\u00fa\u00f1ez","tutorCentroEmail":"cristina.penyarrubia@salesianas.org","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-09-02","fFin":"17/04/2026","horario":"Miercoles y jueves de 9:20 a 14:15","c1f":"20/02/2026","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Hernandez","ap2":"Gallardo","nombre":"Amanda","esp":"Geograf\u00eda e Historia","email":"ahernandezg@student.universidadunie.com","centro":"Escola Mare de D\u00e9u de l'Assumpci\u00f3","localidad":"Badalona / Barcelona","tutorCentroNombre":"Sergi Collazo Gibanet","tutorCentroEmail":"sergi.collazo@jesuitinasbadalona.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-02-01","fFin":"24/04/2026","horario":"8-12.30 h","c1f":"28/01/2026","c1r":"29/01/2026","c1a":"S\u00ed","c1ct":"S\u00ed","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"si","obs":""},{"ap1":"Ibarreche","ap2":"Castro","nombre":"Aitor","esp":"Geograf\u00eda e Historia","email":"aibarrechec@student.universidadunie.com","centro":"Colegio San Pedro y San Felices","localidad":"Burgos / Burgos","tutorCentroNombre":"Jos\u00e9 Antonio Mateos Llorente","tutorCentroEmail":"josea.matllo@educa.jcyl.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"25/03/2026","fFin":"2026-01-06","horario":"8:30 a 14:30","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"L\u00f3pez","ap2":"Honrubia","nombre":"Pablo","esp":"Inform\u00e1tica y Tecnolog\u00eda","email":"plopezh@student.universidadunie.com","centro":"Agora Lled\u00f3 International School","localidad":"Castell\u00f3n de la Plana / Castell\u00f3n","tutorCentroNombre":"Iris S\u00e1nchez Collado","tutorCentroEmail":"iris.sanchez@lledo.edu.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"23/03/2026","fFin":"27/05/2026","horario":"8-12.30 h","c1f":"20/02/2026","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Martin","ap2":"Casanova","nombre":"Lucas","esp":"Geograf\u00eda e Historia","email":"lmartinc1@student.universidadunie.com","centro":"","localidad":"","tutorCentroNombre":"","tutorCentroEmail":"","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"","fFin":"","horario":"","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Martinez","ap2":"Pareja","nombre":"Alba","esp":"Geograf\u00eda e Historia","email":"amartinezp1@student.universidadunie.com","centro":"Institut Escola Joan Sallar\u00e8s i Pla","localidad":"Sabadell / Barcelona","tutorCentroNombre":"Gilbert Roma Sol\u00e1","tutorCentroEmail":"groma2@xtec.cat","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"18/03/2026","fFin":"2026-05-06","horario":"9-14h","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"si","obs":""},{"ap1":"Nu\u00f1ez","ap2":"Vega","nombre":"Inmaculada","esp":"Geograf\u00eda e Historia","email":"inunezv@student.universidadunie.com","centro":"Colegio Diocesano Sagrado Coraz\u00f3n de Jes\u00fas","localidad":"Huelva / Huelva","tutorCentroNombre":"Manuel Jes\u00fas Jald\u00f3n-M\u00e9ndez","tutorCentroEmail":"manuel.jaldon@colegiodiocesano.es","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-12-01","fFin":"19/05/2026","horario":"L-X-V 10/14.30","c1f":"28/01/2026","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Orero","ap2":"Soler","nombre":"Andrea","esp":"Geograf\u00eda e Historia","email":"aoreros@student.universidadunie.com","centro":"Colegio Fundaci\u00f3n San Vicente Ferrer","localidad":"San Antonio de Benag\u00e9ber / Valencia","tutorCentroNombre":"Juan Jos\u00e9 Silvestre","tutorCentroEmail":"jjosesilvestre@hotmail.com","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-03-02","fFin":"14/04/2026","horario":"8-13h","c1f":"20/02/2026","c1r":"25/02/2026","c1a":"S\u00ed","c1ct":"S\u00ed","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Pastor","ap2":"de Frutos","nombre":"Adrian","esp":"Geograf\u00eda e Historia","email":"apastord@student.universidadunie.com","centro":"Colegio Claret","localidad":"Segovia / Segovia","tutorCentroNombre":"Ana Blanco G\u00f3mez","tutorCentroEmail":"anablanco@claretsegoviao365.educamos.com","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-02-02","fFin":"26/03/2026","horario":"viernes de 8h a 13h.","c1f":"20/02/2026","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Rodriguez","ap2":"Alonso","nombre":"Aroah","esp":"Lengua Castellana y Literatura","email":"arodrigueza1@student.universidadunie.com","centro":"IES Mung\u00eda HBI","localidad":"Mung\u00eda / Vizcaya","tutorCentroNombre":"Amaia Larruzea Urkixo","tutorCentroEmail":"amaialarruzea@mungiainstitutua.com","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-10-03","fFin":"29/05/2026","horario":"9-14h","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Salas","ap2":"de Hita","nombre":"Celeste","esp":"Lengua Castellana y Literatura","email":"csalasd@student.universidadunie.com","centro":"Colegio El Cat\u00f3n","localidad":"Torrej\u00f3n de Velasco / Madrid","tutorCentroNombre":"Daniel Ace\u00f1a Caballero","tutorCentroEmail":"daniel.acena@colegioelcaton.com","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"","fFin":"","horario":"","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Sanchez","ap2":"Cote","nombre":"Alejandra","esp":"Geograf\u00eda e Historia","email":"asanchezc1@student.universidadunie.com","centro":"","localidad":"","tutorCentroNombre":"","tutorCentroEmail":"","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"","fFin":"","horario":"viernes de 8h a 13h.","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""},{"ap1":"Sendra","ap2":"Garcia","nombre":"Isaac","esp":"Geograf\u00eda e Historia","email":"isendrag@student.universidadunie.com","centro":"INSTITUl DE 5EGURETAT I MOBILITAT","localidad":"Barcelona / Barcelona","tutorCentroNombre":"Cristina Mas Salillas","tutorCentroEmail":"Cmas22@xtec.cat","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"2026-12-01","fFin":"2026-10-04","horario":"L-J 10-15h","c1f":"28/01/2026","c1r":"2026-04-02","c1a":"S\u00ed","c1ct":"S\u00ed","c1o":"","c2f":"19/03/2026","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"si","obs":""},{"ap1":"Varela","ap2":"Alonso","nombre":"Mauro","esp":"Geograf\u00eda e Historia","email":"mvarelaa@student.universidadunie.com","centro":"","localidad":"","tutorCentroNombre":"","tutorCentroEmail":"","tutorUNIE":"Bruno S\u00e1nchez Gonz\u00e1lez","emailTutorUNIE":"bsanchezg@professional.universidadunie.com","fInicio":"","fFin":"","horario":"","c1f":"","c1r":"","c1a":"","c1ct":"","c1o":"","c2f":"","c2r":"","c2a":"","c2ct":"","c2o":"","c3f":"","c3r":"","c3a":"","cAlumno":"","n1tc":"","n1u":"","n1":"","n2tc":"","n2u":"","n2":"","cat":"no","obs":""}];
-var aluSel=null;
-var filtrados=ALUMNOS.slice();
-var fEst='all';
 
-function go(id,el){
+<!-- MODAL REGISTRO SEGUIMIENTO -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">Registrar seguimiento</h3>
+    <div class="fg3" style="margin-bottom:12px;">
+      <div class="f"><label>Fecha de envio</label><input type="date" id="m-fecha" value=""></div>
+      <div class="f"><label>Fecha de respuesta</label><input type="date" id="m-resp"></div>
+      <div class="f"><label>Videollamada (si aplica)</label><input type="date" id="m-video"></div>
+    </div>
+    <div class="fg" style="margin-bottom:12px;">
+      <div class="f"><label>Asiste el alumno/a?</label>
+        <select id="m-asiste"><option value="">-</option><option value="Si">Si</option><option value="No">No</option></select>
+      </div>
+      <div class="f"><label>Contentos con el estudiante?</label>
+        <select id="m-cont"><option value="">-</option><option value="Si">Si</option><option value="No">No</option></select>
+      </div>
+    </div>
+    <div class="f"><label>Observaciones</label>
+      <input type="text" id="m-obs" placeholder="Breve nota...">
+    </div>
+    <div class="modal-footer">
+      <button class="btn bs bsm" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn bp" onclick="guardarRegistro()">Guardar en Excel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── ESTADO GLOBAL ──
+var ALUMNOS = [];        // array de objetos alumno (cargados del Excel)
+var WORKBOOK = null;     // workbook XLSX en memoria
+var WORKSHEET = null;    // hoja activa
+var aluSel = null;       // alumno seleccionado actualmente
+var filtrados = [];
+var modalCorreo = 0;     // 1,2,3 = correo tutor; 'a' = alumno
+var MODIFICADOS = {};    // {rowIdx: true} filas modificadas
+
+// Mapa de columnas del Excel (1-indexed)
+var COL = {
+  ap1:1, ap2:2, nombre:3, esp:4, email:6,
+  centro:7, localidad:9,
+  tutorCentroNombre:13, tutorCentroApellido:14, tutorCentroEmail:15,
+  tutorUNIE:16,
+  fInicio:18, fFin:19, horario:20,
+  c1f:22, c1r:23, c1a:24, c1ct:25, c1o:26,
+  c2f:27, c2r:28, c2a:29, c2ct:30, c2o:31,
+  c3f:32, c3r:33, c3a:34,
+  video:35, cAlumno:36,
+  n1tc:37, n1u:38, n1:39, n2tc:40, n2u:41, n2:42,
+  catCol:45
+};
+
+// ── CARGA EXCEL ──
+function onDrop(e){
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag');
+  var f = e.dataTransfer.files[0];
+  if(f) procesarArchivo(f);
+}
+function onFileSelect(e){
+  var f = e.target.files[0];
+  if(f) procesarArchivo(f);
+}
+function procesarArchivo(file){
+  var st = document.getElementById('carga-status');
+  st.textContent = 'Leyendo archivo...';
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      var data = new Uint8Array(e.target.result);
+      WORKBOOK = XLSX.read(data, {type:'array', cellDates:false, raw:false});
+      WORKSHEET = WORKBOOK.Sheets[WORKBOOK.SheetNames[0]];
+      extraerAlumnos();
+      st.textContent = '';
+    } catch(err){
+      st.textContent = 'Error al leer el archivo: ' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function celda(ws, row, col){
+  var addr = XLSX.utils.encode_cell({r: row-1, c: col-1});
+  var cell = ws[addr];
+  if(!cell) return '';
+  return String(cell.v || cell.w || '').trim();
+}
+
+function extraerAlumnos(){
+  ALUMNOS = [];
+  MODIFICADOS = {};
+  var range = XLSX.utils.decode_range(WORKSHEET['!ref']);
+  for(var row = 2; row <= range.e.r + 1; row++){
+    var ap1 = celda(WORKSHEET, row, COL.ap1);
+    if(!ap1) continue;
+    var tutorUNIE = celda(WORKSHEET, row, COL.tutorUNIE);
+    if(!tutorUNIE || tutorUNIE.indexOf('Bruno') < 0) continue;
+    var centro = celda(WORKSHEET, row, COL.centro);
+    if(centro.indexOf('Baja') >= 0) continue;
+    var prov = celda(WORKSHEET, row, COL.localidad);
+    var esCat = ['Barcelona','Tarragona','Girona','Lleida'].some(function(p){return prov.indexOf(p)>=0;});
+    var tutNombre = celda(WORKSHEET, row, COL.tutorCentroNombre);
+    var tutApell  = celda(WORKSHEET, row, COL.tutorCentroApellido);
+    ALUMNOS.push({
+      _row: row,
+      ap1: ap1, ap2: celda(WORKSHEET,row,COL.ap2), nombre: celda(WORKSHEET,row,COL.nombre),
+      esp: espCorta(celda(WORKSHEET,row,COL.esp)),
+      email: celda(WORKSHEET,row,COL.email),
+      centro: centro, localidad: prov,
+      tutorCentroNombre: (tutNombre+' '+tutApell).trim(),
+      tutorCentroEmail: celda(WORKSHEET,row,COL.tutorCentroEmail),
+      tutorUNIE: tutorUNIE,
+      fInicio: celda(WORKSHEET,row,COL.fInicio), fFin: celda(WORKSHEET,row,COL.fFin),
+      horario: celda(WORKSHEET,row,COL.horario),
+      c1f: celda(WORKSHEET,row,COL.c1f), c1r: celda(WORKSHEET,row,COL.c1r),
+      c1a: celda(WORKSHEET,row,COL.c1a), c1ct: celda(WORKSHEET,row,COL.c1ct),
+      c1o: celda(WORKSHEET,row,COL.c1o),
+      c2f: celda(WORKSHEET,row,COL.c2f), c2r: celda(WORKSHEET,row,COL.c2r),
+      c2a: celda(WORKSHEET,row,COL.c2a), c2ct: celda(WORKSHEET,row,COL.c2ct),
+      c2o: celda(WORKSHEET,row,COL.c2o),
+      c3f: celda(WORKSHEET,row,COL.c3f), c3r: celda(WORKSHEET,row,COL.c3r),
+      c3a: celda(WORKSHEET,row,COL.c3a),
+      video: celda(WORKSHEET,row,COL.video),
+      cAlumno: celda(WORKSHEET,row,COL.cAlumno),
+      cat: esCat ? 'si' : 'no',
+    });
+  }
+  mostrarCargaOk();
+  filtrados = ALUMNOS.slice();
+  renderLista();
+  renderPanel();
+}
+
+function espCorta(raw){
+  if(!raw) return '';
+  if(raw.indexOf('Esp') >= 0) return raw.split('Esp').pop().trim().replace(/\s*\(.*$/,'').trim();
+  return raw.split('-').pop().trim().replace(/\s*\(.*$/,'').trim().substring(0,35);
+}
+
+function mostrarCargaOk(){
+  var n = ALUMNOS.length;
+  var cat = ALUMNOS.filter(function(a){return a.cat==='si';}).length;
+  var c1  = ALUMNOS.filter(function(a){return !!a.c1f;}).length;
+  var c3  = ALUMNOS.filter(function(a){return !!a.c3f;}).length;
+  document.getElementById('badge-n').textContent = n + ' alumnos cargados';
+  document.getElementById('carga-ok').style.display = '';
+  document.getElementById('stats-carga').innerHTML = statCards(n, cat, c1, c3);
+  document.getElementById('stats-buscar').innerHTML = statCards(n, cat, c1, c3);
+  document.getElementById('rcount').textContent = 'Mostrando ' + n + ' alumnos';
+}
+
+function statCards(n, cat, c1, c3){
+  return '<div class="sc"><div class="sl">Mis alumnos</div><div class="sv">'+n+'</div><div class="ss">asignados</div></div>' +
+    '<div class="sc"><div class="sl">1er correo enviado</div><div class="sv">'+c1+'</div><div class="ss">de '+n+'</div></div>' +
+    '<div class="sc"><div class="sl">En Cataluna</div><div class="sv">'+cat+'</div><div class="ss">videollamada oblig.</div></div>' +
+    '<div class="sc"><div class="sl">3 correos completos</div><div class="sv">'+c3+'</div><div class="ss">seguimiento cerrado</div></div>';
+}
+
+// ── NAVEGACION ──
+function go(id, el){
   document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
   document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
   document.getElementById('s-'+id).classList.add('on');
@@ -293,356 +515,458 @@ function go(id,el){
   if(id==='rubrica') initRub();
 }
 
-function toast(m){
-  var t=document.getElementById('toast');
-  t.textContent=m;t.classList.add('on');
-  setTimeout(function(){t.classList.remove('on');},2000);
-}
-function cp(id){
-  navigator.clipboard.writeText(document.getElementById(id).textContent).then(function(){toast('Copiado');});
-}
-function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
-function fd(d){if(!d)return'-';return String(d);}
+// ── BUSCAR / LISTA ──
+function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+function fd(d){return d ? String(d) : '-';}
 
-// BUSCAR
 function buscar(){
-  var q=norm(document.getElementById('q').value);
-  filtrados=ALUMNOS.filter(function(a){
-    var ok=(fEst==='all')||
-      (fEst==='0'&&!a.c1f)||
-      (fEst==='1'&&a.c1f&&!a.c2f)||
-      (fEst==='2'&&a.c2f&&!a.c3f)||
-      (fEst==='cat'&&a.cat==='si');
+  if(!ALUMNOS.length) return;
+  var q = norm(document.getElementById('q').value);
+  var est = document.getElementById('q-est').value;
+  filtrados = ALUMNOS.filter(function(a){
+    var ok = !est ||
+      (est==='0' && !a.c1f) ||
+      (est==='1' && a.c1f && !a.c2f) ||
+      (est==='2' && a.c2f && !a.c3f) ||
+      (est==='3' && !!a.c3f) ||
+      (est==='cat' && a.cat==='si');
     if(!ok) return false;
     if(!q) return true;
-    return norm(a.ap1+' '+a.ap2+' '+a.nombre+' '+a.centro+' '+a.esp+' '+a.localidad).indexOf(q)>=0;
+    return norm(a.ap1+' '+a.ap2+' '+a.nombre+' '+a.centro+' '+a.esp).indexOf(q) >= 0;
   });
   renderLista();
 }
 
-function filtro(f){
-  fEst=f;
-  document.querySelectorAll('.chip[id^="fq-"]').forEach(function(c){c.classList.remove('c1');});
-  document.getElementById('fq-'+f).classList.add('c1');
-  buscar();
-}
-
 function renderLista(){
-  var list=document.getElementById('alist');
-  var rc=document.getElementById('rcount');
-  rc.textContent='Mostrando '+filtrados.length+' resultados';
-  if(filtrados.length===0){list.innerHTML='<div style="color:var(--t3);padding:12px;">Sin resultados</div>';return;}
-  list.innerHTML=filtrados.map(function(a,i){
-    var c1=a.c1f?'dg':'dx';
-    var c2=a.c2f?'dg':(a.c1f?'dw':'dx');
-    var c3=a.c3f?'dg':(a.c2f?'dw':'dx');
-    var cat=a.cat==='si'?'<span style="font-size:10px;background:rgba(255,184,0,.1);color:var(--w);border:1px solid rgba(255,184,0,.3);border-radius:3px;padding:1px 5px;margin-left:4px;">CAT</span>':'';
-    return '<div class="alu-card" id="ac-'+i+'" onclick="selA('+i+')">'+
-      '<div class="alu-name">'+a.ap1+' '+a.ap2+', '+a.nombre+cat+'</div>'+
-      '<div class="alu-meta">'+a.esp+' &middot; '+a.centro+'</div>'+
-      '<div class="alu-meta">'+a.localidad+'</div>'+
-      '<div class="dots"><div class="dot '+c1+'"></div><div class="dot '+c2+'"></div><div class="dot '+c3+'"></div></div>'+
+  var list = document.getElementById('alist');
+  var rc   = document.getElementById('rcount');
+  if(!ALUMNOS.length){rc.textContent='Carga el Excel primero';list.innerHTML='';return;}
+  rc.textContent = 'Mostrando ' + filtrados.length + ' de ' + ALUMNOS.length + ' alumnos';
+  list.innerHTML = filtrados.map(function(a, i){
+    var c1 = a.c1f ? 'dg' : 'dx';
+    var c2 = a.c2f ? 'dg' : (a.c1f ? 'dw' : 'dx');
+    var c3 = a.c3f ? 'dg' : (a.c2f ? 'dw' : 'dx');
+    var mod = MODIFICADOS[a._row] ? '<span class="badge-mod">Mod.</span>' : '';
+    var cat = a.cat==='si' ? '<span style="font-size:10px;background:rgba(217,119,6,.1);color:var(--w);border:1px solid rgba(217,119,6,.3);border-radius:3px;padding:1px 5px;margin-left:4px;">CAT</span>' : '';
+    return '<div class="alu-card" id="ac-'+i+'" onclick="selA('+i+')">' +
+      '<div class="alu-name">'+a.ap1+' '+a.ap2+', '+a.nombre+cat+mod+'</div>' +
+      '<div class="alu-meta">'+a.esp+' &middot; '+a.centro+'</div>' +
+      '<div class="alu-meta">'+a.localidad+'</div>' +
+      '<div class="dots"><div class="dot '+c1+'"></div><div class="dot '+c2+'"></div><div class="dot '+c3+'"></div></div>' +
     '</div>';
   }).join('');
 }
 
 function selA(i){
-  aluSel=filtrados[i];
+  aluSel = filtrados[i];
   document.querySelectorAll('.alu-card').forEach(function(c){c.classList.remove('sel');});
-  var el=document.getElementById('ac-'+i);
+  var el = document.getElementById('ac-'+i);
   if(el) el.classList.add('sel');
   mostrarDetalle(aluSel);
 }
 
 function mostrarDetalle(a){
-  var det=document.getElementById('adetail');
-  det.style.display='';
-  document.getElementById('d-nom').textContent=a.ap1+' '+a.ap2+', '+a.nombre;
-  document.getElementById('d-tag').textContent=a.esp;
-  var pairs=[
-    ['Centro',a.centro],['Localidad',a.localidad],
-    ['Email',a.email],['Tutor centro',a.tutorCentroNombre],
-    ['Email tutor centro',a.tutorCentroEmail],['Fecha inicio',fd(a.fInicio)],
-    ['Fecha fin',fd(a.fFin)],['Horario',a.horario],
-    ['Cataluna',a.cat==='si'?'Si (videollamada oblig.)':'No'],['Obs.',a.obs]
+  var det = document.getElementById('adetail');
+  det.style.display = '';
+  document.getElementById('d-nom').textContent = a.ap1+' '+a.ap2+', '+a.nombre;
+  document.getElementById('d-tag').textContent = a.esp;
+  var modBadge = document.getElementById('d-mod');
+  modBadge.style.display = MODIFICADOS[a._row] ? '' : 'none';
+  var pairs = [
+    ['Centro', a.centro], ['Localidad', a.localidad],
+    ['Email alumno/a', a.email],
+    ['Tutor/a del centro', a.tutorCentroNombre],
+    ['Email tutor centro', a.tutorCentroEmail],
+    ['Fecha inicio', fd(a.fInicio)], ['Fecha fin', fd(a.fFin)],
+    ['Horario', a.horario],
+    ['Cataluna', a.cat==='si' ? 'Si (videollamada oblig.)' : 'No']
   ];
-  document.getElementById('d-grid').innerHTML=pairs.map(function(p){
+  document.getElementById('d-grid').innerHTML = pairs.map(function(p){
     return '<div class="dk">'+p[0]+'</div><div class="dv">'+(p[1]||'-')+'</div>';
   }).join('');
-  var correos=[
-    {lbl:'1er correo tutor',f:a.c1f,r:a.c1r},
-    {lbl:'2o correo tutor',f:a.c2f,r:a.c2r},
-    {lbl:'3er correo tutor',f:a.c3f,r:a.c3r},
-    {lbl:'Correo alumno/a',f:a.cAlumno,r:''}
+  renderSegRow(a);
+}
+
+function renderSegRow(a){
+  var correos = [
+    {lbl:'1er correo tutor', f:a.c1f, r:a.c1r, asiste:a.c1a, cont:a.c1ct, obs:a.c1o, n:1},
+    {lbl:'2o correo tutor',  f:a.c2f, r:a.c2r, asiste:a.c2a, cont:a.c2ct, obs:a.c2o, n:2},
+    {lbl:'3er correo tutor', f:a.c3f, r:a.c3r, asiste:a.c3a, cont:'',     obs:'',    n:3},
+    {lbl:'Correo alumno/a',  f:a.cAlumno, r:'', asiste:'', cont:'', obs:'', n:'a'},
+    {lbl:'Videollamada',     f:a.video, r:'', asiste:'', cont:'', obs:'', n:'v'}
   ];
-  document.getElementById('d-seg').innerHTML=correos.map(function(c){
-    var ok=!!c.f;
-    return '<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(42,47,61,.4);">'+
-      '<div class="dot" style="background:'+(ok?'var(--g)':'var(--bd)')+'"></div>'+
-      '<span style="font-size:12px;color:var(--t2);flex:1;">'+c.lbl+'</span>'+
-      '<span style="font-size:11px;font-family:var(--m);color:'+(ok?'var(--t)':'var(--t3)')+'">'+
-      (ok?fd(c.f):'Pendiente')+'</span>'+
-      (c.r?'<span style="font-size:11px;color:var(--t3);margin-left:6px;">Resp: '+fd(c.r)+'</span>':'')+
+  document.getElementById('d-seg').innerHTML = correos.map(function(c){
+    var ok = !!c.f;
+    var extra = '';
+    if(ok && (c.asiste || c.cont)) extra = '<span style="font-size:11px;color:var(--t3);margin-left:8px;">' +
+      (c.asiste ? 'Asiste: '+c.asiste : '') + (c.asiste && c.cont ? ' &middot; ' : '') +
+      (c.cont ? 'Contento: '+c.cont : '') + '</span>';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--bd);">' +
+      '<div class="dot" style="background:'+(ok?'var(--g)':'var(--bd)')+'"></div>' +
+      '<span style="font-size:12px;color:var(--t2);flex:1;">'+c.lbl+'</span>' +
+      '<span style="font-size:11px;font-family:var(--m);color:'+(ok?'var(--t)':'var(--t3)'+'">')+(ok ? fd(c.f) : 'Pendiente')+'</span>' +
+      (c.r ? '<span style="font-size:11px;color:var(--t3);">Resp: '+fd(c.r)+'</span>' : '') +
+      extra +
     '</div>';
   }).join('');
 }
 
-function cargaCentro(){
-  if(!aluSel) return;
-  document.getElementById('cc-tu').value=aluSel.tutorCentroNombre;
-  document.getElementById('cc-al').value=aluSel.nombre;
-  document.getElementById('cc-ce').value=aluSel.centro;
-  document.getElementById('cc-cat').value=aluSel.cat;
-  pvC();
-  go('ccentro',document.querySelector('.ni:nth-child(5)'));
+// ── MODAL REGISTRO ──
+function hoy(){
+  var d = new Date();
+  return d.toISOString().slice(0,10);
 }
-function cargaAlumno(){
-  if(!aluSel) return;
-  document.getElementById('ca-n').value=aluSel.nombre;
-  document.getElementById('ca-c').value=aluSel.centro;
-  pvA();
-  go('calumno',document.querySelector('.ni:nth-child(6)'));
+function abrirRegistro(n){
+  if(!aluSel){toast('Selecciona un alumno primero');return;}
+  modalCorreo = n;
+  var titulos = {1:'Registrar 1er correo al tutor', 2:'Registrar 2o correo al tutor', 3:'Registrar 3er correo al tutor'};
+  document.getElementById('modal-title').textContent = titulos[n] + ' — ' + aluSel.nombre + ' ' + aluSel.ap1;
+  // Prefill con datos existentes
+  var preFecha = (n===1 ? aluSel.c1f : n===2 ? aluSel.c2f : aluSel.c3f) || hoy();
+  var preResp  = (n===1 ? aluSel.c1r : n===2 ? aluSel.c2r : aluSel.c3r) || '';
+  var preAsiste= (n===1 ? aluSel.c1a : n===2 ? aluSel.c2a : aluSel.c3a) || '';
+  var preCont  = (n===1 ? aluSel.c1ct: n===2 ? aluSel.c2ct: '') || '';
+  document.getElementById('m-fecha').value  = fechaISO(preFecha);
+  document.getElementById('m-resp').value   = fechaISO(preResp);
+  document.getElementById('m-video').value  = fechaISO(aluSel.video||'');
+  document.getElementById('m-asiste').value = preAsiste;
+  document.getElementById('m-cont').value   = preCont;
+  document.getElementById('m-obs').value    = (n===1 ? aluSel.c1o : n===2 ? aluSel.c2o : '') || '';
+  document.getElementById('modal-bg').classList.add('on');
 }
-function cargaAuth(){
-  if(!aluSel) return;
-  document.getElementById('a-n').value=aluSel.nombre+' '+aluSel.ap1+' '+aluSel.ap2;
-  document.getElementById('a-e').value=aluSel.esp;
-  document.getElementById('a-c').value=aluSel.centro;
-  document.getElementById('a-t').value=aluSel.tutorCentroNombre;
-  document.getElementById('a-h').value=aluSel.horario;
-  go('autorizar',document.querySelector('.ni:nth-child(8)'));
+function abrirRegistroAlumno(){
+  if(!aluSel){toast('Selecciona un alumno primero');return;}
+  modalCorreo = 'a';
+  document.getElementById('modal-title').textContent = 'Registrar correo al alumno — ' + aluSel.nombre + ' ' + aluSel.ap1;
+  document.getElementById('m-fecha').value  = fechaISO(aluSel.cAlumno||hoy());
+  document.getElementById('m-resp').value   = '';
+  document.getElementById('m-video').value  = '';
+  document.getElementById('m-asiste').value = '';
+  document.getElementById('m-cont').value   = '';
+  document.getElementById('m-obs').value    = '';
+  document.getElementById('modal-bg').classList.add('on');
+}
+function cerrarModal(){
+  document.getElementById('modal-bg').classList.remove('on');
 }
 
-// PANEL
+function fechaISO(s){
+  if(!s) return '';
+  s = String(s).trim();
+  // Formatos: DD/MM/YYYY, YYYY-MM-DD, numerico Excel
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  if(/^\d{2}\/\d{2}\/\d{4}$/.test(s)){
+    var p = s.split('/');
+    return p[2]+'-'+p[1]+'-'+p[0];
+  }
+  // Numero serial Excel
+  if(/^\d{5}$/.test(s)){
+    var d = new Date((parseInt(s)-25569)*86400000);
+    return d.toISOString().slice(0,10);
+  }
+  return '';
+}
+
+function guardarRegistro(){
+  if(!aluSel || !WORKSHEET) return;
+  var fecha  = document.getElementById('m-fecha').value;
+  var resp   = document.getElementById('m-resp').value;
+  var video  = document.getElementById('m-video').value;
+  var asiste = document.getElementById('m-asiste').value;
+  var cont   = document.getElementById('m-cont').value;
+  var obs    = document.getElementById('m-obs').value;
+  var row    = aluSel._row;
+  var n      = modalCorreo;
+
+  function setCell(col, val){
+    if(val === '' && !WORKSHEET[XLSX.utils.encode_cell({r:row-1,c:col-1})]) return;
+    WORKSHEET[XLSX.utils.encode_cell({r:row-1,c:col-1})] = {v:val, t:'s'};
+  }
+
+  if(n === 'a'){
+    setCell(COL.cAlumno, fecha);
+    aluSel.cAlumno = fecha;
+  } else {
+    var map = {
+      1: {f:COL.c1f, r:COL.c1r, a:COL.c1a, ct:COL.c1ct, o:COL.c1o},
+      2: {f:COL.c2f, r:COL.c2r, a:COL.c2a, ct:COL.c2ct, o:COL.c2o},
+      3: {f:COL.c3f, r:COL.c3r, a:COL.c3a, ct:null,      o:null}
+    };
+    var cols = map[n];
+    if(fecha)  setCell(cols.f,  fecha);
+    if(resp)   setCell(cols.r,  resp);
+    if(asiste) setCell(cols.a,  asiste);
+    if(cont && cols.ct)  setCell(cols.ct, cont);
+    if(obs  && cols.o)   setCell(cols.o,  obs);
+    if(video) setCell(COL.video, video);
+    // Actualizar objeto en memoria
+    if(n===1){aluSel.c1f=fecha;aluSel.c1r=resp;aluSel.c1a=asiste;aluSel.c1ct=cont;aluSel.c1o=obs;}
+    if(n===2){aluSel.c2f=fecha;aluSel.c2r=resp;aluSel.c2a=asiste;aluSel.c2ct=cont;aluSel.c2o=obs;}
+    if(n===3){aluSel.c3f=fecha;aluSel.c3r=resp;aluSel.c3a=asiste;}
+    if(video) aluSel.video = video;
+  }
+
+  MODIFICADOS[row] = true;
+  cerrarModal();
+  mostrarDetalle(aluSel);
+  renderLista();
+  renderPanel();
+  var modCount = Object.keys(MODIFICADOS).length;
+  toast('Guardado en memoria (' + modCount + ' fila' + (modCount>1?'s':'')+' modificada'+(modCount>1?'s':'')+') — descarga el Excel para guardar');
+}
+
+// ── PANEL ──
 function renderPanel(){
-  var est=document.getElementById('p-est').value;
-  var datos=ALUMNOS.filter(function(a){
+  if(!ALUMNOS.length) return;
+  var est = document.getElementById('p-est') ? document.getElementById('p-est').value : '';
+  var datos = ALUMNOS.filter(function(a){
     if(!est) return true;
     if(est==='0') return !a.c1f;
-    if(est==='1') return a.c1f&&!a.c2f;
-    if(est==='2') return a.c2f&&!a.c3f;
+    if(est==='1') return a.c1f && !a.c2f;
+    if(est==='2') return a.c2f && !a.c3f;
     if(est==='3') return !!a.c3f;
     if(est==='cat') return a.cat==='si';
     return true;
   });
-  var d=function(f){return f?'<span style="color:var(--g)">&#10003;</span>':'<span style="color:var(--t3)">-</span>';};
-  document.getElementById('ptbody').innerHTML=datos.map(function(a){
-    return '<tr><td style="font-weight:500">'+a.ap1+' '+a.ap2+', '+a.nombre+'</td>'+
-      '<td style="color:var(--t3)">'+a.esp+'</td>'+
-      '<td>'+a.centro+'</td>'+
-      '<td style="color:var(--t3)">'+a.localidad+'</td>'+
-      '<td>'+d(a.c1f)+'</td><td>'+d(a.c2f)+'</td><td>'+d(a.c3f)+'</td><td>'+d(a.cAlumno)+'</td>'+
-      '<td>'+(a.cat==='si'?'<span style="color:var(--w)">CAT</span>':'-')+'</td></tr>';
+  var d = function(f){return f ? '<span style="color:var(--g)">&#10003;</span>' : '<span style="color:var(--t3)">-</span>';};
+  var idx = ALUMNOS.indexOf;
+  document.getElementById('ptbody').innerHTML = datos.map(function(a, i){
+    var mod = MODIFICADOS[a._row] ? '<span class="badge-mod">Mod</span>' : '';
+    var fi = filtrados.indexOf(a);
+    return '<tr>' +
+      '<td style="font-weight:500">'+a.ap1+' '+a.ap2+', '+a.nombre+mod+'</td>' +
+      '<td style="color:var(--t3);font-size:11px;">'+a.esp+'</td>' +
+      '<td style="font-size:11px;">'+a.centro+'</td>' +
+      '<td>'+d(a.c1f)+'</td><td>'+d(a.c2f)+'</td><td>'+d(a.c3f)+'</td><td>'+d(a.cAlumno)+'</td>' +
+      '<td>'+(a.cat==='si'?'<span style="color:var(--w);font-size:11px;">CAT</span>':'-')+'</td>' +
+      '<td><button class="btn bs bsm" style="padding:3px 8px;font-size:11px;" onclick="selDesdePanelYVe('+i+',datos)">Ver</button></td>' +
+    '</tr>';
   }).join('');
-  document.getElementById('pcount').textContent='Mostrando '+datos.length+' alumnos';
+  document.getElementById('pcount').textContent = 'Mostrando ' + datos.length + ' alumnos';
+  // guardar datos en scope global para botones
+  window._panelDatos = datos;
+}
+function selDesdePanelYVe(i, _){
+  var a = window._panelDatos[i];
+  aluSel = a;
+  filtrados = ALUMNOS.slice();
+  renderLista();
+  go('buscar', document.querySelector('.ni:nth-child(3)'));
+  setTimeout(function(){
+    var idx = filtrados.indexOf(a);
+    if(idx >= 0){
+      var el = document.getElementById('ac-'+idx);
+      if(el){el.classList.add('sel'); mostrarDetalle(a); el.scrollIntoView({block:'nearest'});}
+    }
+  }, 50);
 }
 
-// CORREOS CENTRO
-var TPC={
-  i:function(t,a,c,yo){return'Estimado/a '+(t||'[Tutor/a]')+',\n\nMe pongo en contacto como tutor/a academico/a de la UNIE para las Practicas Curriculares MSEC.\n\nLe presento a '+(a||'[alumno/a]')+', quien realizara sus practicas en '+(c||'[centro]')+'. Le agradezco sinceramente su implicacion y disponibilidad.\n\nLe ruego que confirme:\n  - Fechas definitivas de inicio y finalizacion.\n  - Horario semanal del/de la estudiante.\n  - Cualquier aspecto organizativo relevante.\n\nQuedo a su disposicion para cualquier consulta.\n\nAtentamente,\n'+(yo||'Bruno Sanchez Gonzalez')+'\nTutor/a Academico/a UNIE\nPracticas Curriculares MSEC 2025/26';},
-  m:function(t,a,c,yo,cat){return'Estimado/a '+(t||'[Tutor/a]')+',\n\nMe pongo en contacto para el seguimiento intermedio de '+(a||'[alumno/a]')+' en '+(c||'[centro]')+'.\n\nLe agradeceria que me informara sobre:\n  - Actitud y aptitud general del/de la estudiante.\n  - Posibles dificultades o aspectos a mejorar.\n  - Grado de satisfaccion con el proceso.'+(cat==='si'?'\n\nEl centro esta en Cataluna, por lo que es necesaria una videollamada de seguimiento segun el protocolo de la Consejeria de Educacion. Le propongo acordar fecha y hora.':'\n\nSi lo considera oportuno, podemos realizar una breve videollamada de seguimiento.')+'\n\nMuchas gracias.\n\nAtentamente,\n'+(yo||'Bruno Sanchez Gonzalez')+'\nTutor/a Academico/a UNIE';},
-  f:function(t,a,c,yo){return'Estimado/a '+(t||'[Tutor/a]')+',\n\nEscribo para cerrar el periodo de practicas de '+(a||'[alumno/a]')+' en '+(c||'[centro]')+'.\n\nLe agradezco sinceramente su dedicacion y apoyo.\n\nLe solicito que valore al/a la estudiante en:\n  - Clima de aula y relacion con el alumnado y equipo docente.\n  - Actitud profesional, puntualidad y responsabilidad.\n  - Adaptacion a la metodologia del centro.\n\nRecuerde enviar el documento oficial de evaluacion firmado y sellado por el centro.\n\nMuchas gracias por su colaboracion.\n\nCordialmente,\n'+(yo||'Bruno Sanchez Gonzalez')+'\nTutor/a Academico/a UNIE\nPracticas Curriculares MSEC 2025/26';}
+// ── DESCARGAR EXCEL ──
+function descargarExcel(){
+  if(!WORKBOOK){toast('Carga el Excel primero');return;}
+  var modCount = Object.keys(MODIFICADOS).length;
+  var fname = 'Seguimiento_Bruno_' + new Date().toISOString().slice(0,10) + '.xlsx';
+  XLSX.writeFile(WORKBOOK, fname);
+  toast('Excel descargado con ' + modCount + ' cambio' + (modCount!==1?'s':''));
+}
+
+// ── CORREOS TUTOR CENTRO ──
+var TPC = {
+  i: function(t,a,c,yo){
+    return 'Estimado/a '+(t||'[Tutor/a]')+',\n\nMe pongo en contacto como tutor/a academico/a de la UNIE para las Practicas Curriculares MSEC.\n\nLe presento a '+(a||'[alumno/a]')+', quien realizara sus practicas en '+(c||'[centro]')+'. Le agradezco sinceramente su implicacion y disponibilidad.\n\nLe ruego que confirme:\n  - Fechas definitivas de inicio y finalizacion.\n  - Horario semanal del/de la estudiante.\n  - Cualquier aspecto organizativo relevante.\n\nQuedo a su disposicion para cualquier consulta.\n\nAtentamente,\n'+(yo||'Bruno Sanchez Gonzalez')+'\nTutor Academico UNIE - Practicas Curriculares MSEC 2025/26';
+  },
+  m: function(t,a,c,yo,cat){
+    return 'Estimado/a '+(t||'[Tutor/a]')+',\n\nMe pongo en contacto para el seguimiento intermedio de '+(a||'[alumno/a]')+' en '+(c||'[centro]')+'.\n\nLe agradeceria que me informara sobre:\n  - Actitud y aptitud general del/de la estudiante.\n  - Posibles dificultades o aspectos a mejorar.\n  - Grado de satisfaccion con el proceso.'+(cat==='si' ? '\n\nEl centro esta en Cataluna, por lo que es necesaria una videollamada de seguimiento segun el protocolo de la Consejeria de Educacion. Le propongo acordar fecha y hora.' : '\n\nSi lo considera oportuno, podemos realizar una breve videollamada de seguimiento.')+'\n\nMuchas gracias.\n\nAtentamente,\n'+(yo||'Bruno Sanchez Gonzalez')+'\nTutor Academico UNIE';
+  },
+  f: function(t,a,c,yo){
+    return 'Estimado/a '+(t||'[Tutor/a]')+',\n\nEscribo para cerrar el periodo de practicas de '+(a||'[alumno/a]')+' en '+(c||'[centro]')+'.\n\nLe agradezco sinceramente su dedicacion y apoyo.\n\nLe solicito que valore al/a la estudiante en:\n  - Clima de aula y relacion con el alumnado y equipo docente.\n  - Actitud profesional, puntualidad y responsabilidad.\n  - Adaptacion a la metodologia del centro.\n\nRecuerde enviar el documento oficial de evaluacion firmado y sellado.\n\nCordialmente,\n'+(yo||'Bruno Sanchez Gonzalez')+'\nTutor Academico UNIE - Practicas Curriculares MSEC 2025/26';
+  }
 };
+
 function pvC(){
-  var t=document.getElementById('cc-t').value;
-  var tu=document.getElementById('cc-tu').value;
-  var al=document.getElementById('cc-al').value;
-  var ce=document.getElementById('cc-ce').value;
-  var yo=document.getElementById('cc-yo').value;
-  var cat=document.getElementById('cc-cat').value;
-  document.getElementById('pvc').textContent=TPC[t](tu,al,ce,yo,cat);
+  var t   = document.getElementById('cc-t').value;
+  var tu  = document.getElementById('cc-tu').value;
+  var al  = document.getElementById('cc-al').value;
+  var ce  = document.getElementById('cc-ce').value;
+  var cat = document.getElementById('cc-cat').value;
+  document.getElementById('pvc').textContent = TPC[t](tu, al, ce, 'Bruno Sanchez Gonzalez', cat);
 }
 
-// CORREOS ALUMNO
+function mailtoC(){
+  var dest   = document.getElementById('cc-email').value || '';
+  var tipo   = document.getElementById('cc-t').value;
+  var asuntos = {i:'Presentacion practicas MSEC UNIE', m:'Seguimiento intermedio practicas MSEC', f:'Cierre practicas y solicitud evaluacion MSEC UNIE'};
+  var url = 'mailto:' + encodeURIComponent(dest) + '?subject=' + encodeURIComponent(asuntos[tipo]) + '&body=' + encodeURIComponent(document.getElementById('pvc').textContent);
+  window.location.href = url;
+}
+
+function cargaCentro(){
+  if(!aluSel) return;
+  document.getElementById('cc-email').value = aluSel.tutorCentroEmail;
+  document.getElementById('cc-tu').value    = aluSel.tutorCentroNombre;
+  document.getElementById('cc-al').value    = aluSel.nombre;
+  document.getElementById('cc-ce').value    = aluSel.centro;
+  document.getElementById('cc-cat').value   = aluSel.cat;
+  pvC();
+  go('ccentro', document.querySelector('.ni:nth-child(5)'));
+}
+
+// ── CORREOS ALUMNO ──
 function pvA(){
-  var nombre=document.getElementById('ca-n').value||'[Nombre]';
-  var yo=document.getElementById('ca-yo').value||'Bruno Sanchez Gonzalez';
-  var centro=document.getElementById('ca-c').value||'[centro]';
-  var tipo=document.getElementById('ca-t').value;
-  var textos={
-    seg:'Estimado/a '+nombre+',\n\nMe pongo en contacto para el seguimiento intermedio de tus practicas en '+centro+'.\n\nTe agradeceria que me comentases:\n  - Como esta siendo la experiencia en el centro?\n  - Se respetan los horarios acordados?\n  - Has tenido alguna dificultad o incidencia?\n  - Avanza la elaboracion de las memorias?\n\nRecuerda: Memoria I = analisis del centro y diario reflexivo. Memoria II = Situacion de Aprendizaje. Ambas en normas APA 7a edicion.\n\nMucho animo,\n'+yo+'\nTutor/a Academico/a UNIE',
-    ini:'Estimado/a '+nombre+',\n\nBienvenido/a al periodo de Practicas Curriculares MSEC en la UNIE. Soy '+yo+', tu tutor/a academico/a. Estare disponible para acompanarte en '+centro+'.\n\nRecuerda que necesitas Gestion Finalizada y mi autorizacion antes de comenzar. Las horas sin autorizacion no son computadas.\n\nEscribeme ante cualquier duda.\n\nCordialmente,\n'+yo+'\nTutor/a Academico/a UNIE\nPracticas Curriculares MSEC 2025/26',
-    mem:'Estimado/a '+nombre+',\n\nRecordatorio de plazos de entrega:\n  - Convocatoria ordinaria: 5 de junio de 2026\n  - Convocatoria extraordinaria: 24 de junio de 2026\n\nSube ambas memorias (Practicas I y II) al campus virtual en la actividad Memoria.\n\nRevisiones clave:\n  - Arial 11pt, interlineado 1,5.\n  - Portada completa.\n  - Indice paginado.\n  - Citas APA 7a edicion.\n  - Diario reflexivo (no diario dia a dia).\n\nIMPORTANTE: plagio, autoplagio o memorias compartidas = nota 0 automatica.\n\n'+yo+'\nTutor/a Academico/a UNIE'
+  var nombre = document.getElementById('ca-n').value || '[Nombre]';
+  var centro = document.getElementById('ca-c').value || '[centro]';
+  var tipo   = document.getElementById('ca-t').value;
+  var yo     = 'Bruno Sanchez Gonzalez';
+  var textos = {
+    seg: 'Estimado/a '+nombre+',\n\nMe pongo en contacto para el seguimiento intermedio de tus practicas en '+centro+'.\n\nTe agradeceria que me comentases brevemente:\n  - Como esta siendo la experiencia en el centro?\n  - Se respetan los horarios acordados?\n  - Has tenido alguna dificultad o incidencia que deba conocer?\n  - Avanza la elaboracion de las memorias?\n\nRecuerda: Memoria I = analisis del centro + diario reflexivo. Memoria II = Situacion de Aprendizaje. Ambas en normas APA 7a edicion.\n\nMucho animo,\n'+yo+'\nTutor Academico UNIE - Practicas Curriculares MSEC 2025/26',
+    ini: 'Estimado/a '+nombre+',\n\nBienvenido/a al periodo de Practicas Curriculares MSEC en la UNIE. Soy '+yo+', tu tutor academico durante esta etapa.\n\nEstare disponible para acompanarte y resolver cualquier duda academica. Recuerda que necesitas Gestion Finalizada y mi autorizacion antes de comenzar. Las horas realizadas sin autorizacion no son computadas.\n\nEscribeme ante cualquier duda.\n\nCordialmente,\n'+yo+'\nTutor Academico UNIE - Practicas Curriculares MSEC 2025/26',
+    mem: 'Estimado/a '+nombre+',\n\nRecordatorio de plazos de entrega de memorias:\n\n  - Convocatoria ordinaria: 5 de junio de 2026\n  - Convocatoria extraordinaria: 24 de junio de 2026\n\nSube ambas memorias (Practicas Curriculares I y II) al campus virtual en la actividad Memoria.\n\nRevisiones formales antes de entregar:\n  - Arial 11pt, interlineado 1,5.\n  - Portada completa con todos los datos.\n  - Indice paginado.\n  - Citas y referencias en APA 7a edicion.\n  - Diario de practicas reflexivo (NO un diario dia a dia).\n\nIMPORTANTE: plagio, autoplagio o memorias compartidas = calificacion automatica de 0.\n\nSaluda,\n'+yo+'\nTutor Academico UNIE'
   };
-  document.getElementById('pva').textContent=textos[tipo];
+  document.getElementById('pva').textContent = textos[tipo];
 }
 
-// AUTORIZACION
+function mailtoA(){
+  var dest   = document.getElementById('ca-email').value || '';
+  var tipo   = document.getElementById('ca-t').value;
+  var asuntos = {seg:'Seguimiento de tus practicas MSEC UNIE', ini:'Inicio de practicas MSEC UNIE', mem:'Recordatorio entrega memorias MSEC UNIE'};
+  var url = 'mailto:' + encodeURIComponent(dest) + '?subject=' + encodeURIComponent(asuntos[tipo]) + '&body=' + encodeURIComponent(document.getElementById('pva').textContent);
+  window.location.href = url;
+}
+
+function cargaAlumno(){
+  if(!aluSel) return;
+  document.getElementById('ca-email').value = aluSel.email;
+  document.getElementById('ca-n').value     = aluSel.nombre;
+  document.getElementById('ca-c').value     = aluSel.centro;
+  pvA();
+  go('calumno', document.querySelector('.ni:nth-child(6)'));
+}
+
+// ── AUTORIZACION ──
 function auth(){
-  var nombre=document.getElementById('a-n').value.trim();
-  var esp=document.getElementById('a-e').value.trim();
-  var centro=document.getElementById('a-c').value.trim();
-  var tutor=document.getElementById('a-t').value.trim();
-  var inicio=document.getElementById('a-fi').value;
-  var fin=document.getElementById('a-ff').value;
-  var horario=document.getElementById('a-h').value.trim();
-  var gest=document.getElementById('a-g').value;
-  var out=document.getElementById('out-auth');
-  var tag=document.getElementById('auth-tag');
-  out.style.display='';
-  var fmtF=function(d){if(!d)return'-';try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return d;}};
-  if(gest!=='si'){
-    tag.textContent='NO AUTORIZADO';
-    tag.style.cssText='background:rgba(255,77,109,.15);color:#ff4d6d;border:1px solid rgba(255,77,109,.3);border-radius:4px;padding:2px 7px;font-size:10px;font-family:var(--m);margin-left:auto;';
-    document.getElementById('pv-auth').textContent='Para: '+(nombre||'[Alumno/a]')+'\nAsunto: RE: Solicitud autorizacion inicio practicas\n\nEstimado/a '+(nombre?nombre.split(' ')[0]:'[Nombre]')+',\n\nHe recibido tu solicitud, pero no puedo autorizar el inicio porque la Gestion Finalizada no esta confirmada en el sistema.\n\nContacta con el Departamento de Practicas:\npracticas.secundaria@universidadunie.com\n\nEscribeme de nuevo cuando este confirmada.\n\nCordialmente,\nBruno Sanchez Gonzalez\nTutor/a Academico/a UNIE';
+  var nombre = document.getElementById('a-n').value.trim();
+  var esp    = document.getElementById('a-e').value.trim();
+  var centro = document.getElementById('a-c').value.trim();
+  var tutor  = document.getElementById('a-t').value.trim();
+  var inicio = document.getElementById('a-fi').value;
+  var fin    = document.getElementById('a-ff').value;
+  var horario= document.getElementById('a-h').value.trim();
+  var gest   = document.getElementById('a-g').value;
+  var out    = document.getElementById('out-auth');
+  var tag    = document.getElementById('auth-tag');
+  out.style.display = '';
+  var fmtF = function(d){if(!d)return'-';try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return d;}};
+  if(gest !== 'si'){
+    tag.textContent = 'NO AUTORIZADO';
+    tag.style.cssText = 'background:rgba(224,48,80,.1);color:var(--r);border:1px solid rgba(224,48,80,.3);border-radius:4px;padding:2px 7px;font-size:10px;font-family:var(--m);margin-left:auto;';
+    document.getElementById('pv-auth').textContent = 'Para: '+(nombre||'[Alumno/a]')+'\nAsunto: RE: Solicitud autorizacion inicio practicas\n\nEstimado/a '+(nombre?nombre.split(' ')[0]:'[Nombre]')+',\n\nHe recibido tu solicitud, pero no puedo autorizar el inicio porque la Gestion Finalizada no esta confirmada. Contacta con el Departamento de Practicas:\npracticas.secundaria@universidadunie.com\n\nEscribeme de nuevo cuando este confirmada.\n\nCordialmente,\nBruno Sanchez Gonzalez\nTutor Academico UNIE';
     return;
   }
-  var fI=inicio?new Date(inicio+'T12:00:00'):null;
-  if(fI&&fI<new Date('2026-01-12T12:00:00')){
-    tag.textContent='FECHA INVALIDA';
-    tag.style.cssText='background:rgba(255,77,109,.15);color:#ff4d6d;border:1px solid rgba(255,77,109,.3);border-radius:4px;padding:2px 7px;font-size:10px;font-family:var(--m);margin-left:auto;';
-    document.getElementById('pv-auth').textContent='Para: '+(nombre||'[Alumno/a]')+'\n\nLa fecha de inicio ('+fmtF(inicio)+') es anterior al periodo oficial (12 enero 2026). No se pueden computar horas antes de esa fecha. Revisa la fecha y contactame de nuevo.\n\nBruno Sanchez Gonzalez\nTutor/a Academico/a UNIE';
+  if(inicio && new Date(inicio+'T12:00:00') < new Date('2026-01-12T12:00:00')){
+    tag.textContent = 'FECHA INVALIDA';
+    tag.style.cssText = 'background:rgba(224,48,80,.1);color:var(--r);border:1px solid rgba(224,48,80,.3);border-radius:4px;padding:2px 7px;font-size:10px;font-family:var(--m);margin-left:auto;';
+    document.getElementById('pv-auth').textContent = 'Para: '+(nombre||'[Alumno/a]')+'\n\nLa fecha de inicio ('+fmtF(inicio)+') es anterior al 12 de enero de 2026. No se computan horas antes de esa fecha. Revisa la fecha.\n\nBruno Sanchez Gonzalez\nTutor Academico UNIE';
     return;
   }
-  tag.textContent='AUTORIZADO';
-  tag.style.cssText='background:rgba(0,229,160,.12);color:#00e5a0;border:1px solid rgba(0,229,160,.3);border-radius:4px;padding:2px 7px;font-size:10px;font-family:var(--m);margin-left:auto;';
-  document.getElementById('pv-auth').textContent='Para: '+(nombre||'[Alumno/a]')+'\nAsunto: Autorizacion inicio practicas - '+(centro||'[Centro]')+'\n\nEstimado/a '+(nombre?nombre.split(' ')[0]:'[Nombre]')+',\n\nConfirmo la autorizacion de inicio de tus practicas:\n\n  Centro: '+(centro||'-')+'\n  Tutor/a del centro: '+(tutor||'-')+'\n  Especialidad: '+(esp||'-')+'\n  Fecha inicio: '+fmtF(inicio)+'\n  Fecha fin: '+fmtF(fin)+'\n  Horario: '+(horario||'-')+'\n\nRecuerda: 100 horas de presencialidad hasta el 1 de junio de 2026. Me pondre en contacto a mitad del proceso.\n\nMucho animo.\n\nCordialmente,\nBruno Sanchez Gonzalez\nTutor/a Academico/a UNIE\nPracticas Curriculares MSEC 2025/26';
+  tag.textContent = 'AUTORIZADO';
+  tag.style.cssText = 'background:rgba(0,168,122,.1);color:var(--g);border:1px solid rgba(0,168,122,.3);border-radius:4px;padding:2px 7px;font-size:10px;font-family:var(--m);margin-left:auto;';
+  document.getElementById('pv-auth').textContent = 'Para: '+(nombre||'[Alumno/a]')+'\nAsunto: Autorizacion inicio practicas - '+(centro||'[Centro]')+'\n\nEstimado/a '+(nombre?nombre.split(' ')[0]:'[Nombre]')+',\n\nConfirmo la autorizacion de inicio de tus practicas:\n\n  Centro: '+(centro||'-')+'\n  Tutor/a del centro: '+(tutor||'-')+'\n  Especialidad: '+(esp||'-')+'\n  Fecha inicio: '+fmtF(inicio)+'\n  Fecha fin: '+fmtF(fin)+'\n  Horario: '+(horario||'-')+'\n\nRecuerda: 100 horas de presencialidad hasta el 1 de junio de 2026. Me pondre en contacto a mitad del proceso para un seguimiento.\n\nMucho animo.\n\nCordialmente,\nBruno Sanchez Gonzalez\nTutor Academico UNIE - Practicas Curriculares MSEC 2025/26';
 }
 function limAuth(){
-  ['a-n','a-e','a-c','a-t','a-fi','a-ff','a-h'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('a-g').value='';
-  document.getElementById('out-auth').style.display='none';
+  ['a-email','a-n','a-e','a-c','a-t','a-fi','a-ff','a-h'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('a-g').value = '';
+  document.getElementById('out-auth').style.display = 'none';
+}
+function mailtoAuth(){
+  var dest   = document.getElementById('a-email').value || (aluSel ? aluSel.email : '');
+  var centro = document.getElementById('a-c').value || '';
+  var asunto = 'Autorizacion inicio practicas' + (centro ? ' - '+centro : '');
+  var url = 'mailto:' + encodeURIComponent(dest) + '?subject=' + encodeURIComponent(asunto) + '&body=' + encodeURIComponent(document.getElementById('pv-auth').textContent);
+  window.location.href = url;
+}
+function cargaAuth(){
+  if(!aluSel) return;
+  document.getElementById('a-email').value = aluSel.email;
+  document.getElementById('a-n').value = aluSel.nombre+' '+aluSel.ap1+' '+aluSel.ap2;
+  document.getElementById('a-e').value = aluSel.esp;
+  document.getElementById('a-c').value = aluSel.centro;
+  document.getElementById('a-t').value = aluSel.tutorCentroNombre;
+  document.getElementById('a-h').value = aluSel.horario;
+  go('autorizar', document.querySelector('.ni:nth-child(8)'));
 }
 
-// EXCEL
-function exportar(){
-  var rows=[['APELLIDO 1','APELLIDO 2','NOMBRE','ESPECIALIDAD','EMAIL','CENTRO','LOCALIDAD',
-    'NOMBRE TUTOR CENTRO','EMAIL TUTOR CENTRO','TUTOR UNIE','EMAIL TUTOR UNIE',
-    'FECHA INICIO','FECHA FIN','HORARIO',
-    'Fecha 1er correo','Resp 1','Asiste 1','Contento 1','Obs 1',
-    'Fecha 2o correo','Resp 2','Asiste 2','Contento 2','Obs 2',
-    'Fecha 3er correo','Resp 3','Asiste 3',
-    'Correo seguimiento alumno',
-    'Nota tutor centro 1','Nota UNIE 1','Nota final 1',
-    'Nota tutor centro 2','Nota UNIE 2','Nota final 2',
-    'Cataluna','Obs general']];
-  ALUMNOS.forEach(function(a){
-    rows.push([a.ap1,a.ap2,a.nombre,a.esp,a.email,a.centro,a.localidad,
-      a.tutorCentroNombre,a.tutorCentroEmail,a.tutorUNIE,a.emailTutorUNIE,
-      a.fInicio,a.fFin,a.horario,
-      a.c1f,a.c1r,a.c1a,a.c1ct,a.c1o,
-      a.c2f,a.c2r,a.c2a,a.c2ct,a.c2o,
-      a.c3f,a.c3r,a.c3a,
-      a.cAlumno,
-      a.n1tc,a.n1u,a.n1,
-      a.n2tc,a.n2u,a.n2,
-      a.cat==='si'?'Si':'',a.obs]);
-  });
-  var wb=XLSX.utils.book_new();
-  var ws=XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols']=rows[0].map(function(_,i){return{wch:i<3?14:i<6?22:13};});
-  XLSX.utils.book_append_sheet(wb,ws,'Seguimiento Bruno');
-  XLSX.writeFile(wb,'Seguimiento_Bruno_Sanchez_'+new Date().toISOString().slice(0,10)+'.xlsx');
-  toast('Excel descargado');
-}
-
-// RUBRICA
-var RD=[
-  {id:'f',lbl:'Aspectos formales (presentacion, ortografia, redaccion, correccion gramatical)',p:5},
-  {id:'d',lbl:'Descripcion del centro (analisis organico, normativa, comunicacion, comunidad educativa)',p:5},
-  {id:'c',lbl:'Contextualizacion (socioeconomica, sociolinguistica, medioambiental, IA, diversidad)',p:30},
-  {id:'t',lbl:'Tareas del alumno en el centro (PEC, departamento, metodologia, descripcion aula)',p:20},
-  {id:'di',lbl:'Diario de practicas (reflexivo, semanal, vinculado al funcionamiento institucional)',p:30},
-  {id:'b',lbl:'Bibliografia y citas APA 7a edicion',p:10}
+// ── RUBRICA ──
+var RD = [
+  {id:'f',  lbl:'Aspectos formales (presentacion, ortografia, redaccion, correccion gramatical)', p:5},
+  {id:'d',  lbl:'Descripcion del centro (analisis organico, normativa, comunicacion, comunidad educativa)', p:5},
+  {id:'c',  lbl:'Contextualizacion (socioeconomica, sociolinguistica, medioambiental, IA, diversidad)', p:30},
+  {id:'t',  lbl:'Tareas del alumno en el centro (PEC, departamento, metodologia, descripcion aula)', p:20},
+  {id:'di', lbl:'Diario de practicas (reflexivo, semanal, vinculado al funcionamiento institucional)', p:30},
+  {id:'b',  lbl:'Bibliografia y citas APA 7a edicion', p:10}
 ];
-var NL=['Insuficiente (0%)','No satisfactorio (30%)','Apto (50%)','Satisfactorio (75%)','Excelente (100%)'];
-var NV=[0,30,50,75,100];
+var NL = ['Insuficiente (0%)','No satisfactorio (30%)','Apto (50%)','Satisfactorio (75%)','Excelente (100%)'];
+var NV = [0,30,50,75,100];
 
 function initRub(){
-  var cont=document.getElementById('rub-items');
-  if(cont.children.length>0) return;
-  cont.innerHTML=RD.map(function(item){
-    return '<div class="rub-item"><div style="display:flex;justify-content:space-between;margin-bottom:6px;">'+
-      '<span style="font-size:12px;color:var(--t);flex:1;padding-right:10px;">'+item.lbl+'</span>'+
-      '<span style="font-size:11px;font-family:var(--m);color:var(--t3);white-space:nowrap;">'+item.p+'%</span></div>'+
-      '<div style="display:flex;gap:5px;flex-wrap:wrap;">'+
-      NL.map(function(lb,i){return '<label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="radio" name="r_'+item.id+'" value="'+NV[i]+'" style="accent-color:var(--ac);"><span style="font-size:11px;color:var(--t2);">'+lb+'</span></label>';}).join('')+
+  var cont = document.getElementById('rub-items');
+  if(cont.children.length > 0) return;
+  cont.innerHTML = RD.map(function(item){
+    return '<div class="rub-item"><div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
+      '<span style="font-size:12px;color:var(--t);flex:1;padding-right:10px;">'+item.lbl+'</span>' +
+      '<span style="font-size:11px;font-family:var(--m);color:var(--t3);white-space:nowrap;">'+item.p+'%</span></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+      NL.map(function(lb,i){return '<label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:var(--t2);"><input type="radio" name="r_'+item.id+'" value="'+NV[i]+'" style="accent-color:var(--ac);">'+lb+'</label>';}).join('') +
       '</div></div>';
   }).join('');
 }
-
 function calcRub(){
-  var tot=0,falt=[];
+  var tot=0, falt=[];
   RD.forEach(function(item){
-    var sel=document.querySelector('input[name="r_'+item.id+'"]:checked');
+    var sel = document.querySelector('input[name="r_'+item.id+'"]:checked');
     if(!sel){falt.push(item.lbl.split(' (')[0]);return;}
-    tot+=(parseInt(sel.value)/100)*item.p;
+    tot += (parseInt(sel.value)/100)*item.p;
   });
   if(falt.length){alert('Faltan criterios:\n- '+falt.join('\n- '));return;}
-  var nota=(tot/10).toFixed(1);
-  var el=document.getElementById('rub-nota');
-  el.textContent=nota+' / 10';
-  el.style.color=nota>=9?'var(--g)':nota>=7?'var(--ac)':nota>=5?'var(--w)':'var(--r)';
-  var nivel=nota>=9?'Sobresaliente':nota>=7?'Notable':nota>=5?'Aprobado':'Suspenso';
-  var fort=[],mej=[];
+  var nota = (tot/10).toFixed(1);
+  var el = document.getElementById('rub-nota');
+  el.textContent = nota + ' / 10';
+  el.style.color = nota>=9?'var(--g)':nota>=7?'var(--ac)':nota>=5?'var(--w)':'var(--r)';
+  var nivel = nota>=9?'Sobresaliente':nota>=7?'Notable':nota>=5?'Aprobado':'Suspenso';
+  var fort=[], mej=[];
   RD.forEach(function(item){
-    var v=parseInt(document.querySelector('input[name="r_'+item.id+'"]:checked').value);
+    var v = parseInt(document.querySelector('input[name="r_'+item.id+'"]:checked').value);
     if(v>=75) fort.push(item.lbl.split(' (')[0]);
     if(v<50)  mej.push(item.lbl.split(' (')[0]);
   });
-  document.getElementById('out-rub').style.display='';
-  document.getElementById('pv-rub').textContent=
-    'INFORME DE EVALUACION - MEMORIA I DE OBSERVACION\n\n'+
-    'Calificacion: '+nota+'/10 - '+nivel+'\n\n'+
-    'FORTALEZAS\n'+(fort.length?fort.map(function(x){return'- '+x;}).join('\n'):'- Ninguna area supera umbral satisfactorio')+'\n\n'+
-    'AREAS DE MEJORA\n'+(mej.length?mej.map(function(x){return'- '+x;}).join('\n'):'- La memoria cumple todos los criterios')+'\n\n'+
-    'La memoria '+(nota>=5?'supera':'NO alcanza')+' la calificacion minima de 5.'+
-    (nota<5?' Revision recomendada para convocatoria extraordinaria (24 junio 2026).':nota<7?' Se recomienda mayor profundidad reflexiva y rigor en citas APA 7a.':' Trabajo destacado.')+
-    '\n\nRecordatorio: plagio, autoplagio o memoria compartida = nota automatica de 0.';
+  document.getElementById('out-rub').style.display = '';
+  document.getElementById('pv-rub').textContent =
+    'INFORME DE EVALUACION - MEMORIA I DE OBSERVACION\n\n' +
+    'Calificacion: '+nota+'/10 - '+nivel+'\n\n' +
+    'FORTALEZAS\n'+(fort.length?fort.map(function(x){return'- '+x;}).join('\n'):'- Ninguna area supera umbral satisfactorio')+'\n\n' +
+    'AREAS DE MEJORA\n'+(mej.length?mej.map(function(x){return'- '+x;}).join('\n'):'- La memoria cumple todos los criterios')+'\n\n' +
+    'La memoria '+(nota>=5?'supera':'NO alcanza')+' la calificacion minima de 5.' +
+    (nota<5?' Revision recomendada para conv. extraordinaria (24 junio 2026).':nota<7?' Se recomienda mayor profundidad reflexiva y rigor en citas APA 7a.':' Trabajo destacado.')+
+    '\n\nRecordatorio: plagio, autoplagio o memoria compartida = calificacion automatica de 0.';
 }
 function resetRub(){
   document.querySelectorAll('input[type="radio"]').forEach(function(r){r.checked=false;});
-  document.getElementById('rub-nota').textContent='-';
-  document.getElementById('rub-nota').style.color='var(--ac)';
-  document.getElementById('out-rub').style.display='none';
+  document.getElementById('rub-nota').textContent = '-';
+  document.getElementById('rub-nota').style.color = 'var(--ac)';
+  document.getElementById('out-rub').style.display = 'none';
 }
 
-
-// MAILTO
-function encodeMailto(s){return encodeURIComponent(s||'');}
-
-function asuntoCentro(tipo){
-  var map={i:'Presentacion y confirmacion de datos - Practicas MSEC UNIE',m:'Seguimiento intermedio practicas MSEC UNIE',f:'Cierre practicas y solicitud evaluacion - MSEC UNIE'};
-  return map[tipo]||'Practicas Curriculares MSEC UNIE';
+// ── UTILS ──
+function cp(id){
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(function(){toast('Copiado al portapapeles');});
 }
-function asuntoAlumno(tipo){
-  var map={seg:'Seguimiento de tus practicas - MSEC UNIE',ini:'Inicio de practicas - MSEC UNIE',mem:'Recordatorio entrega memorias - MSEC UNIE'};
-  return map[tipo]||'Practicas Curriculares MSEC UNIE';
+function toast(m){
+  var t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('on');
+  setTimeout(function(){t.classList.remove('on');}, 3000);
 }
 
-function abrirMailto(previewId, destId, tipoId){
-  // Obtener email del destinatario
-  var dest='';
-  if(previewId==='pvc'){
-    // correo a tutor de centro: usar email del alumno seleccionado si existe
-    dest=aluSel?aluSel.tutorCentroEmail:'';
-    var tipo=document.getElementById('cc-t').value;
-    var asunto=asuntoCentro(tipo);
-  } else {
-    // correo a alumno
-    dest=aluSel?aluSel.email:'';
-    var tipo=document.getElementById('ca-t').value;
-    var asunto=asuntoAlumno(tipo);
-  }
-  var cuerpo=document.getElementById(previewId).textContent;
-  var url='mailto:'+encodeMailto(dest)+'?subject='+encodeMailto(asunto)+'&body='+encodeMailto(cuerpo);
-  window.location.href=url;
-}
-
-function abrirMailtoAuth(){
-  var dest=aluSel?aluSel.email:'';
-  var centro=document.getElementById('a-c').value||'';
-  var asunto='Autorizacion inicio practicas'+(centro?' - '+centro:'');
-  var cuerpo=document.getElementById('pv-auth').textContent;
-  var url='mailto:'+encodeMailto(dest)+'?subject='+encodeMailto(asunto)+'&body='+encodeMailto(cuerpo);
-  window.location.href=url;
-}
-
-// BOOT
-filtrados=ALUMNOS.slice();
-renderLista();
-pvC();pvA();
-renderPanel();
+// ── BOOT ──
+pvC(); pvA();
 </script>
 </body>
 </html>
