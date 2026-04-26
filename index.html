@@ -146,6 +146,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;font-
   <nav class="side">
     <div class="nl">Datos</div>
     <div class="ni on" onclick="go('carga',this)">&#8593; Cargar Excel</div>
+    <div class="ni" onclick="go('pendientes',this)">&#9201; Pendientes</div>
     <div class="ni" onclick="go('buscar',this)">&#9672; Mis alumnos</div>
     <div class="ni" onclick="go('panel',this)">&#9678; Panel seguimiento</div>
     <div class="nl">Correos</div>
@@ -246,8 +247,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;font-
                   <button class="btn bs bsm" onclick="cargaAlumno()">&#9993; Correo alumno</button>
                   <button class="btn bs bsm" onclick="cargaAuth()">&#10022; Autorizar</button>
                 </div>
-                <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);">
-                  <button class="btn bg2" style="width:100%;justify-content:center;" onclick="generarDOCX()">&#128196; Generar Word de evidencias (.docx)</button>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:6px;">
+                  <button class="btn bg2" style="justify-content:center;" onclick="generarDOCX()">&#128196; Generar Word de evidencias (.docx)</button>
+                  <button class="btn bs" style="justify-content:center;" onclick="abrirCalendarioAlumno()">&#128197; Añadir recordatorios a Google Calendar</button>
                 </div>
               </div>
             </div>
@@ -256,6 +258,23 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;font-
       </div>
     </div>
 
+
+    <!-- PENDIENTES -->
+    <div id="s-pendientes" class="sec">
+      <div class="card">
+        <div class="ch">
+          <h2>Pendientes de envío</h2>
+          <span class="tag">ESTA SEMANA Y PRÓXIMAS</span>
+        </div>
+        <div class="al ai" style="margin-bottom:14px;" id="pend-info">Carga el Excel primero para ver los pendientes.</div>
+        <div class="br" style="margin-bottom:16px;">
+          <button class="btn bg2" onclick="descargarICS()">&#128197; Descargar TODOS los recordatorios (.ics)</button>
+          <button class="btn bs bsm" onclick="renderPendientes()">&#8635; Actualizar</button>
+        </div>
+        <div id="pend-urgente" style="margin-bottom:16px;"></div>
+        <div id="pend-proximo"></div>
+      </div>
+    </div>
     <!-- PANEL -->
     <div id="s-panel" class="sec">
       <div class="card">
@@ -595,6 +614,7 @@ function go(id, el){
   document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
   document.getElementById('s-'+id).classList.add('on');
   if(el) el.classList.add('on');
+  if(id==='pendientes') renderPendientes();
   if(id==='panel') renderPanel();
   if(id==='ccentro') pvC();
   if(id==='calumno') pvA();
@@ -901,62 +921,21 @@ function descargarExcel(){
   toast('Excel descargado con ' + modCount + ' cambio' + (modCount!==1?'s':''));
 }
 
-// ── CORREOS TUTOR CENTRO — textos exactos de los modelos oficiales ──
+// ── CORREOS TUTOR CENTRO ──
 function pvC(){
   var tipo  = document.getElementById('cc-t').value;
   var tu    = document.getElementById('cc-tu').value.trim() || '[Nombre Tutor del centro]';
   var al    = document.getElementById('cc-al').value.trim() || '[Nombre]';
   var alap  = document.getElementById('cc-alap').value.trim() || '[Apellidos]';
-  var alFull = al + (alap ? ' ' + alap : '');
-  var ce    = document.getElementById('cc-ce').value.trim() || '[Centro]';
   var cat   = document.getElementById('cc-cat').value;
-  var yo    = 'Bruno Sanchez Gonzalez';
-  var email = 'coordinacion.secundaria@universidadunie.com';
-  var texto = '';
-
-  if(tipo === 'i'){
-    texto = 'Estimado/a, ' + tu + ':\n\n' +
-      'Estoy encantado de saludarle. Soy ' + yo + ', Tutor Academico de la asignatura de Practicum I y II de Master Universitario de Formacion del Profesorado de la Universidad Internacional de Empresa (UNIE). Soy Tutor del alumno "' + alFull + '", actualmente realizando el periodo de practicas en su centro educativo.\n\n' +
-      'En primer lugar, quisiera agradecerle el esfuerzo y la implicacion en la tutorizacion de nuestro alumnado, sabiendo lo que conlleva este proceso. Las practicas academicas son una herramienta muy importante para la adquisicion de las competencias especificas docentes, demostrando al alumnado la realidad educativa de las aulas. Es por ello por lo que ocupan en UNIE un papel fundamental en la formacion de los estudiantes universitarios.\n\n' +
-      'Por otro lado, sere la persona de contacto en este proceso de practicas, por lo que puedes contar conmigo para solucionar cualquier incidencia y/o problema. El correo de contacto es: ' + email + '\n\n' +
-      'Para tener este primer acercamiento con usted es importante que nos ayude a comenzar con el seguimiento de nuestro alumnado, respondiendo de manera breve estas cuestiones:\n\n' +
-      '- Como esta siendo el desarrollo de las practicas de nuestro alumno/a?\n\n' +
-      '- Esta acudiendo al centro en el horario establecido?\n\n' +
-      '- En que titulacion/curso y materias/modulos esta ejecutando sus practicas?\n\n' +
-      '- Esta cumpliendo con las normas y reglas del centro y con las tareas encomendadas por su parte de manera respetuosa y profesional?\n\n' +
-      '- Cuales son las fechas de inicio y de finalizacion del alumno en sus practicas? Esta ultima cuestion es para comprobar las fechas en nuestra base de datos.\n\n' +
-      'Quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante este proceso.\n\n' +
-      'Muchas gracias.\n\n' +
-      'Reciba un cordial saludo,\n\n' + yo;
-  } else if(tipo === 'm'){
-    var parrafoVideo = cat === 'si'
-      ? 'En la medida de lo posible y en funcion de su disponibilidad, nos gustaria poder realizar una reunion de seguimiento y/o sugerencia sobre el proceso de practicas mediante videollamada o un contacto telefonico. Entendemos el volumen de trabajo diario que tienen, mas aun si cabe asumiendo la labor de tutorizacion, pero si fuera posible establecer el mencionado contacto creemos que la calidad del proceso puede verse incrementada.'
-      : 'En la medida de lo posible y en funcion de su disponibilidad, nos gustaria poder realizar una reunion de seguimiento y/o sugerencia sobre el proceso de practicas mediante videollamada o un contacto telefonico. Entendemos el volumen de trabajo diario que tienen, mas aun si cabe asumiendo la labor de tutorizacion, pero si fuera posible establecer el mencionado contacto creemos que la calidad del proceso puede verse incrementada.';
-    texto = 'Estimado/a, ' + tu + ':\n\n' +
-      'Me alegro mucho saludarle. Contacto de nuevo con usted para continuar con el seguimiento de nuestro alumnado (' + alFull + '). Para ayudarnos con el proceso, es importante que puedas responder nuevamente y de manera breve, si no es mucha molestia, a las siguientes cuestiones:\n\n' +
-      '- Esta siendo una experiencia satisfactoria para ambas partes (Tutor-Alumno)?\n\n' +
-      '- Cumple con el horario establecido por el centro de practicas?\n\n' +
-      '- Tiene buena actitud con el estudiante y con el personal del centro educativo; y tiene buena aptitud docente en el aula, demostrando profesionalidad y rigurosidad academica?\n\n' +
-      'Si existiera algun cambio de fechas en el proceso de practicas del alumnado, le rogamos que nos lo comunique para poder asi modificarlo nosotros tambien en nuestra base de datos.\n\n' +
-      parrafoVideo + '\n\n' +
-      'Aprovecho este email para adjuntarle el modelo de evaluacion del tutor del centro, el cual se debe de rellenar, firmar y poner el sello del centro para enviarlo de forma escaneada al Coordinador de Practicas. Su email de contacto es: "' + email + '". Esta evaluacion se enviara cuando el alumnado finalice sus practicas, recordando la confidencialidad de la nota.\n\n' +
-      'Nuevamente, quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante este proceso.\n\n' +
-      'Reciba un cordial saludo,\n\n' + yo;
-  } else {
-    texto = 'Estimado/a, ' + tu + ':\n\n' +
-      'Encantado de saludarle de nuevo. Ya hemos llegado al fin de nuestro proceso de seguimiento del periodo de practicas del Master de Formacion del Profesorado.\n\n' +
-      'Desde UNIE queremos agradecerle todo el esfuerzo, apoyo y guia de aprendizaje que ha sido para nuestro alumnado. Agradecer al Centro Educativo en general por ofrecernos la oportunidad de acoger alumnos de practicas de nuestra universidad y por supuesto a la contribucion que hacen para mejorar la realidad educativa con el desempeno diario de la profesion docente.\n\n' +
-      'Para concluir con este seguimiento agradeceria, si no es mucha molestia, que nos responda a estas cuestiones de manera breve:\n\n' +
-      '- Como ha sido el proceso, en aspectos generales, del alumnado como aspirante a profesor?\n\n' +
-      '- Cual es el grado de satisfaccion general que tiene con las practicas de este alumno?\n\n' +
-      '- Ha generado bien clima de aula con sus intervenciones e interacciones tanto con los estudiantes como con el personal del Centro?\n\n' +
-      'Aprovecho tambien este email, al igual que en el segundo seguimiento, para adjuntarle el modelo de evaluacion del tutor del centro, el cual se debe de rellenar, firmar y sellar con el sello del centro para enviarlo de forma escaneada al coordinador de Practicas. Este envio es importante para que el alumnado pueda continuar y/o finalizar su proceso formativo. Su email de contacto es: "' + email + '". Esta evaluacion se enviara cuando el alumnado finalice sus practicas, recordando la confidencialidad de la nota.\n\n' +
-      'Esperamos que la estancia del alumnado haya sido satisfactoria y, por supuesto, agradecerle de nuevo la colaboracion y su desempeno como tutor de centro. Si no hemos realizado o agendado todavia una reunion mediante videollamada o llamada en este proceso y tiene disponibilidad para llevar a cabo la misma, comentenos la misma para intentar cuadrar una fecha de reunion (seran unos minutos).\n\n' +
-      'Nuevamente quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante este proceso.\n\n' +
-      'Muchas gracias.\n\n' +
-      'Reciba un cordial saludo,\n\n' + yo;
-  }
-
+  // Build a fake alumno object for the canonical text function
+  var fakeA = {
+    nombre: al, ap1: alap, ap2: '',
+    tutorCentroNombre: tu,
+    cat: cat
+  };
+  var nMap = { i:1, m:2, f:3 };
+  var texto = textoEmailTutor(fakeA, nMap[tipo]);
   document.getElementById('pvc').textContent = texto;
 }
 
@@ -1030,49 +1009,58 @@ function cargaCentro(){
   go('ccentro', document.querySelector('.ni:nth-child(5)'));
 }
 
-// ── CORREOS ALUMNO — texto exacto del modelo oficial ──
+// ── CORREOS ALUMNO ──
 function pvA(){
   var nombre = document.getElementById('ca-n').value.trim()  || '[Nombre]';
   var ap     = document.getElementById('ca-ap').value.trim() || '';
-  var alFull = nombre + (ap ? ' ' + ap : '');
   var centro = document.getElementById('ca-c').value.trim()  || '[Centro]';
   var tipo   = document.getElementById('ca-t').value;
-  var yo     = 'Bruno Sanchez Gonzalez';
+  var yo     = YO_NOMBRE;
+  var alFull = nombre + (ap ? ' ' + ap : '');
+  var fakeA  = { nombre: nombre, ap1: ap, ap2: '', centro: centro };
   var texto  = '';
-
   if(tipo === 'seg'){
-    texto = 'Estimado/a, ' + alFull + ':\n\n' +
-      'Encantado de saludarle. Soy ' + yo + ', su Tutor Academico de la Universidad Internacional de Empresa (UNIE). Me pongo en contacto con usted para realizar el seguimiento de sus practicas en el Centro Educativo. Le informo de que me he puesto en contacto con su centro para realizar de manera paralela el mismo seguimiento, acorde con las competencias que tengo como tutor academico.\n\n' +
-      'Como parte del seguimiento del proceso de practicas, me gustaria saber cual es el grado de satisfaccion y de intervencion en su centro educativo. Para ello, es conveniente que responda de manera breve las siguientes cuestiones:\n\n' +
-      '- Como se esta desarrollando sus practicas en el Centro?\n\n' +
-      '- Estas cumpliendo con el horario establecido o existe alguna modificacion en la misma?\n\n' +
-      '- Estas cumpliendo con las reglas y normas que vienen dada por el propio centro?\n\n' +
-      '- Como es el dia a dia en el aula y si te sientes comodo con la labor que estas desempenando?\n\n' +
-      '- Cual es tu grado de satisfaccion general del desarrollo de tus practicas hasta ahora?\n\n' +
-      'Espero que sus practicas esten siendo satisfactorias le deseo una finalizacion positiva de las mismas.\n\n' +
-      'Recordatorio: toda la documentacion que debe tener en cuenta para el proceso de sus practicas esta colgada en el Campus virtual. Estos documentos le serviran para saber que tiene que realizar en el periodo de observacion y de intervencion, asi como la realizacion de las Memorias de practicas I y II.\n\n' +
-      'Quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante el proceso.\n\n' +
-      'Reciba un cordial saludo,\n\n' + yo;
+    texto = textoEmailAlumno(fakeA);
   } else if(tipo === 'ini'){
-    texto = 'Estimado/a, ' + alFull + ':\n\n' +
-      'Bienvenido/a al periodo de Practicas Curriculares MSEC en la UNIE. Soy ' + yo + ', tu Tutor Academico durante esta etapa.\n\n' +
-      'Estare disponible para acompanarte y resolver cualquier duda academica. Recuerda que necesitas Gestion Finalizada y mi autorizacion antes de comenzar. Las horas realizadas sin autorizacion no son computadas.\n\n' +
-      'Escribeme ante cualquier duda.\n\n' +
-      'Reciba un cordial saludo,\n\n' + yo + '\nTutor Academico UNIE - Practicas Curriculares MSEC 2025/26';
+    var lineas = [
+      'Estimado/a, ' + alFull + ':',
+      '',
+      'Bienvenido/a al período de Prácticas Curriculares MSEC en la UNIE. Soy ' + yo + ', tu Tutor Académico durante esta etapa.',
+      '',
+      'Estaré disponible para acompañarte y resolver cualquier duda académica. Recuerda que necesitas Gestión Finalizada y mi autorización antes de comenzar. Las horas realizadas sin autorización no son computadas.',
+      '',
+      'Eseríbeme ante cualquier duda.',
+      '',
+      'Reciba un cordial saludo,',
+      '',
+      yo + '\nTutor Académico UNIE - Prácticas Curriculares MSEC 2025/26'
+    ];
+    texto = lineas.join('\n');
   } else {
-    texto = 'Estimado/a, ' + alFull + ':\n\n' +
-      'Recordatorio de plazos de entrega de memorias:\n\n' +
-      '  - Convocatoria ordinaria: 5 de junio de 2026\n' +
-      '  - Convocatoria extraordinaria: 24 de junio de 2026\n\n' +
-      'Sube ambas memorias (Practicas Curriculares I y II) al campus virtual en la actividad Memoria.\n\n' +
-      'Revisiones formales antes de entregar:\n' +
-      '  - Arial 11pt, interlineado 1,5.\n' +
-      '  - Portada completa con todos los datos.\n' +
-      '  - Indice paginado.\n' +
-      '  - Citas y referencias en APA 7a edicion.\n' +
-      '  - Diario de practicas reflexivo (NO un diario dia a dia).\n\n' +
-      'IMPORTANTE: plagio, autoplagio o memorias compartidas = calificacion automatica de 0.\n\n' +
-      'Reciba un cordial saludo,\n\n' + yo + '\nTutor Academico UNIE';
+    var lineas2 = [
+      'Estimado/a, ' + alFull + ':',
+      '',
+      'Recordatorio de plazos de entrega de memorias:',
+      '',
+      '  - Convocatoria ordinaria: 5 de junio de 2026',
+      '  - Convocatoria extraordinaria: 24 de junio de 2026',
+      '',
+      'Sube ambas memorias (Prácticas Curriculares I y II) al campus virtual en la actividad Memoria.',
+      '',
+      'Revisiones formales antes de entregar:',
+      '  - Arial 11pt, interlineado 1,5.',
+      '  - Portada completa con todos los datos.',
+      '  - Índice paginado.',
+      '  - Citas y referencias en APA 7ª edición.',
+      '  - Diario de prácticas reflexivo (NO un diario día a día).',
+      '',
+      'IMPORTANTE: plagio, autoplagio o memorias compartidas = calificación automática de 0.',
+      '',
+      'Reciba un cordial saludo,',
+      '',
+      yo + '\nTutor Académico UNIE'
+    ];
+    texto = lineas2.join('\n');
   }
   document.getElementById('pva').textContent = texto;
 }
@@ -1328,6 +1316,297 @@ function generarDOCX(){
     toast('Error generando docx: ' + err.message);
     console.error(err);
   });
+}
+
+
+// ════════════════════════════════════════════════════
+// TEXTOS OFICIALES DE EMAILS (con ortografía correcta)
+// ════════════════════════════════════════════════════
+var YO_NOMBRE  = 'Bruno Sánchez González';
+var YO_EMAIL   = 'bsanchezg@professional.universidadunie.com';
+var COORD_EMAIL= 'coordinacion.secundaria@universidadunie.com';
+
+function textoEmailTutor(a, n){
+  var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
+  var tu     = a.tutorCentroNombre || '[Tutor del centro]';
+  var cat    = a.cat;
+
+  if(n === 1){
+    return 'Estimado/a, ' + tu + ':\n\n' +
+      'Estoy encantado de saludarle. Soy ' + YO_NOMBRE + ', Tutor Académico de la asignatura de Prácticum I y II de Máster Universitario de Formación del Profesorado de la Universidad Internacional de Empresa (UNIE). Soy Tutor del alumno "' + alFull + '", actualmente realizando el período de prácticas en su centro educativo.\n\n' +
+      'En primer lugar, quisiera agradecerle el esfuerzo y la implicación en la tutorización de nuestro alumnado, sabiendo lo que conlleva este proceso. Las prácticas académicas son una herramienta muy importante para la adquisición de las competencias específicas docentes, demostrando al alumnado la realidad educativa de las aulas. Es por ello por lo que ocupan en UNIE un papel fundamental en la formación de los estudiantes universitarios.\n\n' +
+      'Por otro lado, seré la persona de contacto en este proceso de prácticas, por lo que puedes contar conmigo para solucionar cualquier incidencia y/o problema. El correo de contacto es: ' + COORD_EMAIL + '\n\n' +
+      'Para tener este primer acercamiento con usted es importante que nos ayude a comenzar con el seguimiento de nuestro alumnado, respondiendo de manera breve estas cuestiones:\n\n' +
+      '- ¿Cómo está siendo el desarrollo de las prácticas de nuestro alumno/a?\n' +
+      '- ¿Está acudiendo al centro en el horario establecido?\n' +
+      '- ¿En qué titulación/curso y materias/módulos está ejecutando sus prácticas?\n' +
+      '- ¿Está cumpliendo con las normas y reglas del centro y con las tareas encomendadas por su parte de manera respetuosa y profesional?\n' +
+      '- ¿Cuáles son las fechas de inicio y de finalización del alumno en sus prácticas? Esta última cuestión es para comprobar las fechas en nuestra base de datos.\n\n' +
+      'Quedo a su disposición para aclarar cualquier duda que le pueda surgir durante este proceso.\n\n' +
+      'Muchas gracias.\n\nReciba un cordial saludo,\n\n' + YO_NOMBRE;
+  }
+  if(n === 2){
+    var parrafoVideo = 'En la medida de lo posible y en función de su disponibilidad, nos gustaría poder realizar una reunión de seguimiento y/o sugerencia sobre el proceso de prácticas mediante videollamada o un contacto telefónico. Entendemos el volumen de trabajo diario que tienen, más aún si cabe asumiendo la labor de tutorización, pero si fuera posible establecer el mencionado contacto creemos que la calidad del proceso puede verse incrementada.' +
+      (cat === 'si' ? ' Al tratarse de un centro en Cataluña, esta videollamada es obligatoria según el protocolo de la Consejería de Educación.' : '');
+    return 'Estimado/a, ' + tu + ':\n\n' +
+      'Me alegro mucho de saludarle. Contacto de nuevo con usted para continuar con el seguimiento de nuestro alumnado (' + alFull + '). Para ayudarnos con el proceso, es importante que pueda responder nuevamente y de manera breve, si no es mucha molestia, a las siguientes cuestiones:\n\n' +
+      '- ¿Está siendo una experiencia satisfactoria para ambas partes (Tutor-Alumno)?\n' +
+      '- ¿Cumple con el horario establecido por el centro de prácticas?\n' +
+      '- ¿Tiene buena actitud con el estudiante y con el personal del centro educativo, y buena aptitud docente en el aula, demostrando profesionalidad y rigurosidad académica?\n\n' +
+      'Si existiera algún cambio de fechas en el proceso de prácticas del alumnado, le rogamos que nos lo comunique para poder así modificarlo nosotros también en nuestra base de datos.\n\n' +
+      parrafoVideo + '\n\n' +
+      'Aprovecho este email para adjuntarle el modelo de evaluación del tutor del centro, el cual se debe rellenar, firmar y poner el sello del centro para enviarlo de forma escaneada al Coordinador de Prácticas. Su email de contacto es: "' + COORD_EMAIL + '". Esta evaluación se enviará cuando el alumnado finalice sus prácticas, recordando la confidencialidad de la nota.\n\n' +
+      'Nuevamente, quedo a su disposición para aclarar cualquier duda que le pueda surgir durante este proceso.\n\nReciba un cordial saludo,\n\n' + YO_NOMBRE;
+  }
+  if(n === 3){
+    return 'Estimado/a, ' + tu + ':\n\n' +
+      'Encantado de saludarle de nuevo. Ya hemos llegado al fin de nuestro proceso de seguimiento del período de prácticas del Máster de Formación del Profesorado.\n\n' +
+      'Desde UNIE queremos agradecerle todo el esfuerzo, apoyo y guía de aprendizaje que ha supuesto para nuestro alumnado. Agradecer al Centro Educativo en general por ofrecernos la oportunidad de acoger alumnos de prácticas de nuestra universidad y, por supuesto, por la contribución que hacen para mejorar la realidad educativa con el desempeño diario de la profesión docente.\n\n' +
+      'Para concluir con este seguimiento, agradecería, si no es mucha molestia, que nos respondiera a estas cuestiones de manera breve:\n\n' +
+      '- ¿Cómo ha sido el proceso, en aspectos generales, del alumnado como aspirante a profesor?\n' +
+      '- ¿Cuál es el grado de satisfacción general que tiene con las prácticas de este alumno?\n' +
+      '- ¿Ha generado buen clima de aula con sus intervenciones e interacciones tanto con los estudiantes como con el personal del Centro?\n\n' +
+      'Aprovecho también este email, al igual que en el segundo seguimiento, para adjuntarle el modelo de evaluación del tutor del centro, el cual se debe rellenar, firmar y sellar con el sello del centro para enviarlo de forma escaneada al Coordinador de Prácticas. Este envío es importante para que el alumnado pueda continuar y/o finalizar su proceso formativo. Su email de contacto es: "' + COORD_EMAIL + '". Esta evaluación se enviará cuando el alumnado finalice sus prácticas, recordando la confidencialidad de la nota.\n\n' +
+      'Esperamos que la estancia del alumnado haya sido satisfactoria y, por supuesto, agradecerle de nuevo la colaboración y su desempeño como tutor de centro. Si no hemos realizado o agendado todavía una reunión mediante videollamada o llamada en este proceso y tiene disponibilidad para llevarla a cabo, coméntenos su disponibilidad para intentar cuadrar una fecha (serán unos minutos).\n\n' +
+      'Nuevamente quedo a su disposición para aclarar cualquier duda que le pueda surgir durante este proceso.\n\nMuchas gracias.\n\nReciba un cordial saludo,\n\n' + YO_NOMBRE;
+  }
+  return '';
+}
+
+function textoEmailAlumno(a){
+  var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
+  return 'Estimado/a, ' + alFull + ':\n\n' +
+    'Encantado de saludarle. Soy ' + YO_NOMBRE + ', su Tutor Académico de la Universidad Internacional de Empresa (UNIE). Me pongo en contacto con usted para realizar el seguimiento de sus prácticas en el Centro Educativo. Le informo de que me he puesto en contacto con su centro para realizar de manera paralela el mismo seguimiento, acorde con las competencias que tengo como Tutor Académico.\n\n' +
+    'Como parte del seguimiento del proceso de prácticas, me gustaría saber cuál es el grado de satisfacción y de intervención en su centro educativo. Para ello, es conveniente que responda de manera breve las siguientes cuestiones:\n\n' +
+    '- ¿Cómo se está desarrollando sus prácticas en el Centro?\n' +
+    '- ¿Estás cumpliendo con el horario establecido o existe alguna modificación?\n' +
+    '- ¿Estás cumpliendo con las reglas y normas que vienen dadas por el propio centro?\n' +
+    '- ¿Cómo es el día a día en el aula y te sientes cómodo/a con la labor que estás desempeñando?\n' +
+    '- ¿Cuál es tu grado de satisfacción general del desarrollo de tus prácticas hasta ahora?\n\n' +
+    'Espero que sus prácticas estén siendo satisfactorias y le deseo una finalización positiva de las mismas.\n\n' +
+    'Recordatorio: toda la documentación necesaria para el proceso de prácticas está disponible en el Campus Virtual. Estos documentos le servirán para saber qué debe realizar en el período de observación y de intervención, así como para la elaboración de las Memorias de Prácticas I y II.\n\n' +
+    'Quedo a su disposición para aclarar cualquier duda que le pueda surgir durante el proceso.\n\nReciba un cordial saludo,\n\n' + YO_NOMBRE;
+}
+
+// ════════════════════════════════════════════════════
+// CÁLCULO DE FECHAS IDEALES DE ENVÍO
+// ════════════════════════════════════════════════════
+function calcFechasEnvio(a){
+  var iso1 = fechaISO(a.fInicio);
+  var iso2 = fechaISO(a.fFin);
+  if(!iso1 || !iso2) return null;
+  var inicio = new Date(iso1 + 'T12:00:00');
+  var fin    = new Date(iso2 + 'T12:00:00');
+  var total  = fin - inicio;
+  // C1: inicio + 5 días laborables (~7 días)
+  var c1 = new Date(inicio); c1.setDate(c1.getDate() + 7);
+  // C2: mitad del periodo
+  var c2 = new Date(inicio.getTime() + total / 2);
+  // C3: fin - 7 días
+  var c3 = new Date(fin); c3.setDate(c3.getDate() - 7);
+  // Correo alumno: mismo día que C2
+  var ca = new Date(c2);
+  return { c1: c1, c2: c2, c3: c3, ca: ca, inicio: inicio, fin: fin };
+}
+
+function diasDesdeHoy(fecha){
+  var hoy = new Date(); hoy.setHours(0,0,0,0);
+  return Math.round((fecha - hoy) / 86400000);
+}
+
+function fmtCorto(d){
+  return d.toLocaleDateString('es-ES', {weekday:'short', day:'2-digit', month:'short'});
+}
+
+function fmtICS(d){
+  // ICS date format: YYYYMMDD
+  var y = d.getFullYear();
+  var m = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  return y + '' + m + '' + dd;
+}
+
+// ════════════════════════════════════════════════════
+// SECCIÓN PENDIENTES
+// ════════════════════════════════════════════════════
+function renderPendientes(){
+  if(!ALUMNOS.length){
+    document.getElementById('pend-info').textContent = 'Carga el Excel primero para ver los pendientes.';
+    document.getElementById('pend-urgente').innerHTML = '';
+    document.getElementById('pend-proximo').innerHTML = '';
+    return;
+  }
+
+  // Recopilar todos los pendientes
+  var pendientes = [];
+  ALUMNOS.forEach(function(a){
+    var f = calcFechasEnvio(a);
+    if(!f) return;
+    var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
+    var items = [
+      { n:1, lbl:'1er correo al tutor',       fecha: f.c1, enviado: !!a.c1f, dest: a.tutorCentroEmail },
+      { n:2, lbl:'2º correo al tutor',        fecha: f.c2, enviado: !!a.c2f, dest: a.tutorCentroEmail },
+      { n:3, lbl:'3er correo al tutor',       fecha: f.c3, enviado: !!a.c3f, dest: a.tutorCentroEmail },
+      { n:'a', lbl:'Correo al alumno',        fecha: f.ca, enviado: !!a.cAlumno, dest: a.email }
+    ];
+    items.forEach(function(it){
+      if(it.enviado) return; // ya enviado, no mostrar
+      var dias = diasDesdeHoy(it.fecha);
+      if(dias > 21) return; // más de 3 semanas, no mostrar aún
+      pendientes.push({ a: a, alFull: alFull, dias: dias, fecha: it.fecha, n: it.n, lbl: it.lbl, dest: it.dest });
+    });
+  });
+
+  // Ordenar por fecha
+  pendientes.sort(function(x,y){ return x.fecha - y.fecha; });
+
+  var urgentes = pendientes.filter(function(p){ return p.dias <= 7; });
+  var proximos = pendientes.filter(function(p){ return p.dias > 7 && p.dias <= 21; });
+  var vencidos = pendientes.filter(function(p){ return p.dias < 0; });
+
+  var total = pendientes.length;
+  document.getElementById('pend-info').innerHTML =
+    '<strong>' + total + ' emails pendientes</strong> en las próximas 3 semanas' +
+    (vencidos.length ? ' · <span style="color:var(--r)">⚠ ' + vencidos.length + ' vencidos</span>' : '') +
+    '. El archivo .ics incluye recordatorios de <strong>todos los alumnos</strong> con fechas registradas.';
+
+  function tarjetaPend(p){
+    var dias = p.dias;
+    var color = dias < 0 ? 'var(--r)' : dias <= 3 ? 'var(--w)' : 'var(--ac)';
+    var diasTxt = dias < 0 ? 'Hace ' + Math.abs(dias) + ' días' : dias === 0 ? 'HOY' : dias === 1 ? 'Mañana' : 'En ' + dias + ' días';
+    var asunto = p.n === 'a'
+      ? 'Seguimiento de prácticas'
+      : 'A/A de "' + p.a.tutorCentroNombre + '": Contacto para tutor de «' + p.alFull + '». UNIE';
+    var cuerpo = p.n === 'a' ? textoEmailAlumno(p.a) : textoEmailTutor(p.a, p.n);
+    var gcUrl  = googleCalUrl(p);
+    return '<div style="background:var(--sf);border:1px solid var(--bd);border-left:3px solid ' + color + ';border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+      '<div style="flex:1;min-width:200px;">' +
+        '<div style="font-size:13px;font-weight:500;color:var(--t);">' + p.alFull + '</div>' +
+        '<div style="font-size:11px;color:var(--t3);margin-top:2px;">' + p.lbl + ' · ' + p.a.centro + '</div>' +
+        '<div style="font-size:11px;font-family:var(--m);margin-top:3px;color:' + color + ';font-weight:600;">' + diasTxt + ' · ' + fmtCorto(p.fecha) + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        '<button class="btn bp bsm" onclick="enviarPendiente(' + JSON.stringify(p.dest) + ',' + JSON.stringify(asunto) + ',' + JSON.stringify(cuerpo) + ')">✉ Enviar</button>' +
+        '<a href="' + gcUrl + '" target="_blank" class="btn bs bsm" style="text-decoration:none;">📅 Google Cal</a>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var htmlU = urgentes.length
+    ? '<div style="font-size:11px;font-weight:600;color:var(--r);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;">⚡ Esta semana (' + urgentes.length + ')</div>' + urgentes.map(tarjetaPend).join('')
+    : '<div style="font-size:12px;color:var(--t3);padding:12px 0;">✓ Ningún email urgente esta semana.</div>';
+
+  var htmlP = proximos.length
+    ? '<div style="font-size:11px;font-weight:600;color:var(--ac);letter-spacing:.07em;text-transform:uppercase;margin:16px 0 8px;">📋 Próximas 3 semanas (' + proximos.length + ')</div>' + proximos.map(tarjetaPend).join('')
+    : '';
+
+  document.getElementById('pend-urgente').innerHTML = htmlU;
+  document.getElementById('pend-proximo').innerHTML = htmlP;
+}
+
+function enviarPendiente(dest, asunto, cuerpo){
+  abrirOutlookWeb(dest, asunto, cuerpo);
+}
+
+// ════════════════════════════════════════════════════
+// GOOGLE CALENDAR URL (evento individual)
+// ════════════════════════════════════════════════════
+function googleCalUrl(p){
+  var d = fmtICS(p.fecha);
+  var dEnd = new Date(p.fecha); dEnd.setDate(dEnd.getDate()+1);
+  var dEndStr = fmtICS(dEnd);
+  var titulo = encodeURIComponent('📧 ' + p.lbl + ' — ' + p.alFull);
+  var detalle = encodeURIComponent(
+    'Alumno: ' + p.alFull + '\nCentro: ' + p.a.centro + '\nEmail: ' + p.dest +
+    '\n\n--- TEXTO DEL EMAIL ---\n' + (p.n === 'a' ? textoEmailAlumno(p.a) : textoEmailTutor(p.a, p.n))
+  );
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    '&text=' + titulo +
+    '&dates=' + d + '/' + dEndStr +
+    '&details=' + detalle +
+    '&sf=true&output=xml';
+}
+
+// Botones de Google Calendar en detalle de alumno
+function abrirCalendarioAlumno(){
+  if(!aluSel){ toast('Selecciona un alumno primero'); return; }
+  var a = aluSel;
+  var f = calcFechasEnvio(a);
+  if(!f){ toast('Este alumno no tiene fechas de inicio y fin registradas'); return; }
+  var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
+  var items = [
+    { n:1, lbl:'1er correo al tutor', fecha:f.c1, dest:a.tutorCentroEmail, a:a, alFull:alFull },
+    { n:2, lbl:'2º correo al tutor',  fecha:f.c2, dest:a.tutorCentroEmail, a:a, alFull:alFull },
+    { n:3, lbl:'3er correo al tutor', fecha:f.c3, dest:a.tutorCentroEmail, a:a, alFull:alFull },
+    { n:'a',lbl:'Correo al alumno',   fecha:f.ca, dest:a.email,            a:a, alFull:alFull }
+  ];
+  items.forEach(function(it, i){
+    setTimeout(function(){
+      window.open(googleCalUrl(it), '_blank');
+    }, i * 400);
+  });
+  toast('Abriendo ' + items.length + ' eventos en Google Calendar...');
+}
+
+// ════════════════════════════════════════════════════
+// EXPORTAR ICS GLOBAL (todos los alumnos)
+// ════════════════════════════════════════════════════
+function descargarICS(){
+  if(!ALUMNOS.length){ toast('Carga el Excel primero'); return; }
+  var lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Agente Tutor UNIE//ES',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Recordatorios Prácticas MSEC',
+    'X-WR-TIMEZONE:Europe/Madrid'
+  ];
+  var count = 0;
+  ALUMNOS.forEach(function(a){
+    var f = calcFechasEnvio(a);
+    if(!f) return;
+    var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
+    var items = [
+      { n:1, lbl:'1er correo al tutor', fecha:f.c1, dest:a.tutorCentroEmail },
+      { n:2, lbl:'2º correo al tutor',  fecha:f.c2, dest:a.tutorCentroEmail },
+      { n:3, lbl:'3er correo al tutor', fecha:f.c3, dest:a.tutorCentroEmail },
+      { n:'a',lbl:'Correo al alumno',   fecha:f.ca, dest:a.email }
+    ];
+    items.forEach(function(it){
+      var d    = fmtICS(it.fecha);
+      var dEnd = new Date(it.fecha); dEnd.setDate(dEnd.getDate()+1);
+      var uid  = 'unie-' + a._row + '-' + it.n + '@agente-tutor-unie';
+      var cuerpo = it.n === 'a' ? textoEmailAlumno(a) : textoEmailTutor(a, it.n);
+      var desc = ('Alumno: ' + alFull + '\\nCentro: ' + a.centro + '\\nEmail destino: ' + it.dest +
+        '\\n\\n--- TEXTO DEL EMAIL ---\\n' + cuerpo)
+        .replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:' + uid);
+      lines.push('DTSTART;VALUE=DATE:' + d);
+      lines.push('DTEND;VALUE=DATE:' + fmtICS(dEnd));
+      lines.push('SUMMARY:📧 ' + it.lbl + ' — ' + alFull);
+      lines.push('DESCRIPTION:' + desc);
+      lines.push('BEGIN:VALARM');
+      lines.push('TRIGGER:-P1D');
+      lines.push('ACTION:DISPLAY');
+      lines.push('DESCRIPTION:Recordatorio: ' + it.lbl + ' — ' + alFull);
+      lines.push('END:VALARM');
+      lines.push('END:VEVENT');
+      count++;
+    });
+  });
+  lines.push('END:VCALENDAR');
+
+  var blob = new Blob([lines.join('\r\n')], {type:'text/calendar;charset=utf-8'});
+  var url  = URL.createObjectURL(blob);
+  var el   = document.createElement('a');
+  el.href  = url;
+  el.download = 'Recordatorios_Practicas_MSEC_' + new Date().toISOString().slice(0,10) + '.ics';
+  document.body.appendChild(el);
+  el.click();
+  setTimeout(function(){ document.body.removeChild(el); URL.revokeObjectURL(url); }, 500);
+  toast('Descargado: ' + count + ' recordatorios (.ics)');
 }
 
 pvC(); pvA();
