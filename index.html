@@ -245,6 +245,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;font-
                   <button class="btn bs bsm" onclick="cargaAlumno()">&#9993; Correo alumno</button>
                   <button class="btn bs bsm" onclick="cargaAuth()">&#10022; Autorizar</button>
                 </div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);">
+                  <button class="btn bg2" style="width:100%;justify-content:center;" onclick="generarPDF()">&#128196; Generar PDF de evidencias</button>
+                </div>
               </div>
             </div>
           </div>
@@ -1206,6 +1209,260 @@ function toast(m){
   var t = document.getElementById('toast');
   t.textContent = m; t.classList.add('on');
   setTimeout(function(){t.classList.remove('on');}, 3000);
+}
+
+
+// ── GENERAR PDF DE EVIDENCIAS ──
+function textoEmailTutor(a, n){
+  var yo    = 'Bruno Sanchez Gonzalez';
+  var email = 'coordinacion.secundaria@universidadunie.com';
+  var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
+  var tu    = a.tutorCentroNombre || '[Tutor del centro]';
+  var cat   = a.cat;
+  if(n === 1){
+    return 'Estimado/a, ' + tu + ':\n\n' +
+      'Estoy encantado de saludarle. Soy ' + yo + ', Tutor Academico de la asignatura de Practicum I y II de Master Universitario de Formacion del Profesorado de la Universidad Internacional de Empresa (UNIE). Soy Tutor del alumno "' + alFull + '", actualmente realizando el periodo de practicas en su centro educativo.\n\n' +
+      'En primer lugar, quisiera agradecerle el esfuerzo y la implicacion en la tutorizacion de nuestro alumnado, sabiendo lo que conlleva este proceso. Las practicas academicas son una herramienta muy importante para la adquisicion de las competencias especificas docentes, demostrando al alumnado la realidad educativa de las aulas. Es por ello por lo que ocupan en UNIE un papel fundamental en la formacion de los estudiantes universitarios.\n\n' +
+      'Por otro lado, sere la persona de contacto en este proceso de practicas, por lo que puedes contar conmigo para solucionar cualquier incidencia y/o problema. El correo de contacto es: ' + email + '\n\n' +
+      'Para tener este primer acercamiento con usted es importante que nos ayude a comenzar con el seguimiento de nuestro alumnado, respondiendo de manera breve estas cuestiones:\n\n' +
+      '- Como esta siendo el desarrollo de las practicas de nuestro alumno/a?\n' +
+      '- Esta acudiendo al centro en el horario establecido?\n' +
+      '- En que titulacion/curso y materias/modulos esta ejecutando sus practicas?\n' +
+      '- Esta cumpliendo con las normas y reglas del centro y con las tareas encomendadas por su parte de manera respetuosa y profesional?\n' +
+      '- Cuales son las fechas de inicio y de finalizacion del alumno en sus practicas? Esta ultima cuestion es para comprobar las fechas en nuestra base de datos.\n\n' +
+      'Quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante este proceso.\n\nMuchas gracias.\n\nReciba un cordial saludo,\n\n' + yo;
+  }
+  if(n === 2){
+    return 'Estimado/a, ' + tu + ':\n\n' +
+      'Me alegro mucho saludarle. Contacto de nuevo con usted para continuar con el seguimiento de nuestro alumnado (' + alFull + '). Para ayudarnos con el proceso, es importante que puedas responder nuevamente y de manera breve, si no es mucha molestia, a las siguientes cuestiones:\n\n' +
+      '- Esta siendo una experiencia satisfactoria para ambas partes (Tutor-Alumno)?\n' +
+      '- Cumple con el horario establecido por el centro de practicas?\n' +
+      '- Tiene buena actitud con el estudiante y con el personal del centro educativo; y tiene buena aptitud docente en el aula, demostrando profesionalidad y rigurosidad academica?\n\n' +
+      'Si existiera algun cambio de fechas en el proceso de practicas del alumnado, le rogamos que nos lo comunique para poder asi modificarlo nosotros tambien en nuestra base de datos.\n\n' +
+      'En la medida de lo posible y en funcion de su disponibilidad, nos gustaria poder realizar una reunion de seguimiento mediante videollamada o contacto telefonico.' +
+      (cat === 'si' ? ' Al tratarse de un centro en Cataluna, esta videollamada es obligatoria segun el protocolo de la Consejeria de Educacion.' : '') + '\n\n' +
+      'Aprovecho este email para adjuntarle el modelo de evaluacion del tutor del centro, el cual se debe de rellenar, firmar y poner el sello del centro para enviarlo de forma escaneada al Coordinador de Practicas. Su email de contacto es: "' + email + '".\n\n' +
+      'Nuevamente, quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante este proceso.\n\nReciba un cordial saludo,\n\n' + yo;
+  }
+  if(n === 3){
+    return 'Estimado/a, ' + tu + ':\n\n' +
+      'Encantado de saludarle de nuevo. Ya hemos llegado al fin de nuestro proceso de seguimiento del periodo de practicas del Master de Formacion del Profesorado.\n\n' +
+      'Desde UNIE queremos agradecerle todo el esfuerzo, apoyo y guia de aprendizaje que ha sido para nuestro alumnado.\n\n' +
+      'Para concluir con este seguimiento agradeceria, si no es mucha molestia, que nos responda a estas cuestiones de manera breve:\n\n' +
+      '- Como ha sido el proceso, en aspectos generales, del alumnado como aspirante a profesor?\n' +
+      '- Cual es el grado de satisfaccion general que tiene con las practicas de este alumno?\n' +
+      '- Ha generado bien clima de aula con sus intervenciones e interacciones tanto con los estudiantes como con el personal del Centro?\n\n' +
+      'Aprovecho tambien este email para adjuntarle el modelo de evaluacion del tutor del centro, el cual se debe de rellenar, firmar y sellar con el sello del centro para enviarlo de forma escaneada al coordinador de Practicas. Su email de contacto es: "' + email + '".\n\n' +
+      'Muchas gracias.\n\nReciba un cordial saludo,\n\n' + yo;
+  }
+  return '';
+}
+
+function textoEmailAlumno(a){
+  var yo = 'Bruno Sanchez Gonzalez';
+  var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
+  return 'Estimado/a, ' + alFull + ':\n\n' +
+    'Encantado de saludarle. Soy ' + yo + ', su Tutor Academico de la Universidad Internacional de Empresa (UNIE). Me pongo en contacto con usted para realizar el seguimiento de sus practicas en el Centro Educativo. Le informo de que me he puesto en contacto con su centro para realizar de manera paralela el mismo seguimiento, acorde con las competencias que tengo como tutor academico.\n\n' +
+    'Como parte del seguimiento del proceso de practicas, me gustaria saber cual es el grado de satisfaccion y de intervencion en su centro educativo. Para ello, es conveniente que responda de manera breve las siguientes cuestiones:\n\n' +
+    '- Como se esta desarrollando sus practicas en el Centro?\n' +
+    '- Estas cumpliendo con el horario establecido o existe alguna modificacion en la misma?\n' +
+    '- Estas cumpliendo con las reglas y normas que vienen dada por el propio centro?\n' +
+    '- Como es el dia a dia en el aula y si te sientes comodo con la labor que estas desempenando?\n' +
+    '- Cual es tu grado de satisfaccion general del desarrollo de tus practicas hasta ahora?\n\n' +
+    'Espero que sus practicas esten siendo satisfactorias le deseo una finalizacion positiva de las mismas.\n\n' +
+    'Recordatorio: toda la documentacion que debe tener en cuenta para el proceso de sus practicas esta colgada en el Campus virtual.\n\n' +
+    'Quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante el proceso.\n\nReciba un cordial saludo,\n\n' + yo;
+}
+
+function emailCard(opts){
+  // opts: {tipo, de, para, cc, asunto, fecha, cuerpo, respuesta}
+  var colorHeader = opts.tipo === 'enviado' ? '#1a4ba8' : '#2d6a4f';
+  var labelHeader = opts.tipo === 'enviado' ? 'EMAIL ENVIADO' : 'RESPUESTA RECIBIDA';
+  var cuerpoHtml = (opts.cuerpo || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+
+  var deHtml = opts.de ? '<tr><td class="eh-k">De:</td><td class="eh-v">' + esc(opts.de) + '</td></tr>' : '';
+  var paraHtml = opts.para ? '<tr><td class="eh-k">Para:</td><td class="eh-v">' + esc(opts.para) + '</td></tr>' : '';
+  var ccHtml = opts.cc ? '<tr><td class="eh-k">CC:</td><td class="eh-v">' + esc(opts.cc) + '</td></tr>' : '';
+  var asuntoHtml = opts.asunto ? '<tr><td class="eh-k">Asunto:</td><td class="eh-v"><strong>' + esc(opts.asunto) + '</strong></td></tr>' : '';
+  var fechaHtml = opts.fecha ? '<tr><td class="eh-k">Fecha:</td><td class="eh-v">' + esc(opts.fecha) + '</td></tr>' : '';
+
+  return '<div class="email-card">' +
+    '<div class="email-header" style="background:' + colorHeader + '">' + labelHeader + '</div>' +
+    '<table class="eh-table">' + deHtml + paraHtml + ccHtml + asuntoHtml + fechaHtml + '</table>' +
+    '<div class="email-body">' + cuerpoHtml + '</div>' +
+  '</div>';
+}
+
+function placeholderCard(label){
+  return '<div class="email-card placeholder-card">' +
+    '<div class="email-header" style="background:#666">RESPUESTA RECIBIDA — PENDIENTE</div>' +
+    '<div class="placeholder-body">[ Pegar aqui captura de pantalla de: ' + esc(label) + ' ]</div>' +
+  '</div>';
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function generarPDF(){
+  if(!aluSel){ toast('Selecciona un alumno primero'); return; }
+  var a = aluSel;
+  var yo      = 'Bruno Sanchez Gonzalez';
+  var miEmail = 'bsanchezg@professional.universidadunie.com';
+  var alFull  = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
+  var asuntoBase = 'A/A de "' + a.tutorCentroNombre + '": Contacto para tutor de \u00ab' + alFull + '\u00bb. UNIE';
+  var asuntoAlumno = 'Seguimiento de practicas';
+  var fmtF = function(d){
+    if(!d) return '';
+    var iso = fechaISO(d);
+    if(!iso) return d;
+    try{ return new Date(iso + 'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+    catch(e){ return d; }
+  };
+
+  var sections = [];
+
+  // ── 1er correo al tutor ──
+  sections.push('<div class="section-title">1. PRIMER CORREO AL TUTOR DEL CENTRO</div>');
+  sections.push(emailCard({
+    tipo: 'enviado',
+    de: yo + ' <' + miEmail + '>',
+    para: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
+    asunto: asuntoBase,
+    fecha: fmtF(a.c1f) || '[fecha de envio]',
+    cuerpo: textoEmailTutor(a, 1)
+  }));
+  if(a.c1r){
+    sections.push(emailCard({
+      tipo: 'recibido',
+      de: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
+      para: yo + ' <' + miEmail + '>',
+      asunto: 'RE: ' + asuntoBase,
+      fecha: fmtF(a.c1r),
+      cuerpo: a.c1o ? 'Observaciones registradas: ' + a.c1o : ''
+    }));
+  } else {
+    sections.push(placeholderCard('Respuesta al 1er correo del tutor del centro'));
+  }
+
+  // ── 2o correo al tutor ──
+  sections.push('<div class="section-title page-break">2. SEGUNDO CORREO AL TUTOR DEL CENTRO</div>');
+  sections.push(emailCard({
+    tipo: 'enviado',
+    de: yo + ' <' + miEmail + '>',
+    para: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
+    asunto: asuntoBase,
+    fecha: fmtF(a.c2f) || '[fecha de envio]',
+    cuerpo: textoEmailTutor(a, 2)
+  }));
+  if(a.c2r){
+    sections.push(emailCard({
+      tipo: 'recibido',
+      de: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
+      para: yo + ' <' + miEmail + '>',
+      asunto: 'RE: ' + asuntoBase,
+      fecha: fmtF(a.c2r),
+      cuerpo: a.c2o ? 'Observaciones registradas: ' + a.c2o : ''
+    }));
+  } else {
+    sections.push(placeholderCard('Respuesta al 2o correo del tutor del centro'));
+  }
+
+  // ── 3er correo al tutor ──
+  sections.push('<div class="section-title page-break">3. TERCER CORREO AL TUTOR DEL CENTRO</div>');
+  sections.push(emailCard({
+    tipo: 'enviado',
+    de: yo + ' <' + miEmail + '>',
+    para: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
+    asunto: asuntoBase,
+    fecha: fmtF(a.c3f) || '[fecha de envio]',
+    cuerpo: textoEmailTutor(a, 3)
+  }));
+  if(a.c3r){
+    sections.push(emailCard({
+      tipo: 'recibido',
+      de: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
+      para: yo + ' <' + miEmail + '>',
+      asunto: 'RE: ' + asuntoBase,
+      fecha: fmtF(a.c3r),
+      cuerpo: a.c3a ? 'Asiste: ' + a.c3a : ''
+    }));
+  } else {
+    sections.push(placeholderCard('Respuesta al 3er correo del tutor del centro'));
+  }
+
+  // ── Email al alumno ──
+  sections.push('<div class="section-title page-break">4. EMAIL DE SEGUIMIENTO AL ALUMNO</div>');
+  sections.push(emailCard({
+    tipo: 'enviado',
+    de: yo + ' <' + miEmail + '>',
+    para: alFull + (a.email ? ' <' + a.email + '>' : ''),
+    asunto: asuntoAlumno,
+    fecha: fmtF(a.cAlumno) || '[fecha de envio]',
+    cuerpo: textoEmailAlumno(a)
+  }));
+  sections.push(placeholderCard('Respuesta del alumno al email de seguimiento'));
+
+  // ── Videollamada (si aplica) ──
+  if(a.cat === 'si' || a.video){
+    sections.push('<div class="section-title">5. VIDEOLLAMADA DE SEGUIMIENTO' + (a.cat === 'si' ? ' (OBLIGATORIA — CATALUNA)' : '') + '</div>');
+    if(a.video){
+      sections.push('<div class="email-card"><div class="email-header" style="background:#1a4ba8">VIDEOLLAMADA REGISTRADA</div>' +
+        '<div class="email-body"><strong>Fecha:</strong> ' + esc(excelFechaDisplay(a.video)) + '<br><br>' +
+        (a.c2a ? '<strong>Asistio el alumno:</strong> ' + esc(a.c2a) + '<br>' : '') +
+        '</div></div>');
+    } else {
+      sections.push(placeholderCard('Captura de pantalla de la videollamada de seguimiento'));
+    }
+  }
+
+  var html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
+    '<title>Evidencias ' + esc(alFull) + '</title>' +
+    '<style>' +
+    'body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1a1a1a;margin:0;padding:0;background:#f0f0f0;}' +
+    '@media print{body{background:#fff;} .no-print{display:none;} .page-break{page-break-before:always;} html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}' +
+    '.page{max-width:820px;margin:0 auto;background:#fff;padding:0 0 40px 0;}' +
+    '.cover{background:linear-gradient(135deg,#1a3a7a 0%,#2a5ec8 100%);color:#fff;padding:36px 40px 28px;margin-bottom:0;}' +
+    '.cover h1{font-size:18pt;font-weight:700;margin:0 0 6px;}' +
+    '.cover h2{font-size:13pt;font-weight:400;margin:0 0 20px;opacity:.85;}' +
+    '.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-top:16px;}' +
+    '.cover-item{font-size:9.5pt;}' +
+    '.cover-lbl{opacity:.7;font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;}' +
+    '.cover-val{font-weight:600;}' +
+    '.content{padding:0 40px;}' +
+    '.section-title{font-size:10pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1a3a7a;border-bottom:2px solid #1a3a7a;padding:18px 0 6px;margin:24px 0 14px;}' +
+    '.email-card{border:1px solid #d0d5e8;border-radius:6px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);}' +
+    '.email-header{color:#fff;font-size:8.5pt;font-weight:700;letter-spacing:.08em;padding:7px 14px;text-transform:uppercase;}' +
+    '.eh-table{width:100%;border-collapse:collapse;padding:10px 14px;display:table;}' +
+    '.eh-table{padding:0;}' +
+    '.eh-k{font-size:9pt;color:#555;font-weight:600;white-space:nowrap;padding:5px 14px 3px;width:58px;vertical-align:top;}' +
+    '.eh-v{font-size:9.5pt;color:#1a1a1a;padding:5px 14px 3px 0;}' +
+    '.email-body{font-size:9.5pt;line-height:1.6;padding:12px 14px 14px;border-top:1px solid #e8eaf0;white-space:pre-wrap;color:#222;}' +
+    '.placeholder-card .placeholder-body{font-size:9.5pt;color:#888;font-style:italic;padding:28px 14px;text-align:center;border:2px dashed #ccc;margin:10px;border-radius:4px;min-height:80px;display:flex;align-items:center;justify-content:center;}' +
+    '.footer{margin-top:32px;padding-top:14px;border-top:1px solid #ddd;font-size:8.5pt;color:#888;display:flex;justify-content:space-between;}' +
+    '.print-btn{position:fixed;bottom:24px;right:24px;background:#1a4ba8;color:#fff;border:none;border-radius:8px;padding:12px 22px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);}' +
+    '.print-btn:hover{background:#143a8a;}' +
+    '</style></head><body>' +
+    '<div class="page">' +
+    '<div class="cover">' +
+    '<h1>Evidencias de Seguimiento Practicum MSEC 25-26</h1>' +
+    '<h2>Practicas Curriculares I y II &mdash; UNIE</h2>' +
+    '<div class="cover-grid">' +
+    '<div class="cover-item"><div class="cover-lbl">Alumno</div><div class="cover-val">' + esc(alFull) + '</div></div>' +
+    '<div class="cover-item"><div class="cover-lbl">Especialidad</div><div class="cover-val">' + esc(a.esp) + '</div></div>' +
+    '<div class="cover-item"><div class="cover-lbl">Centro de practicas</div><div class="cover-val">' + esc(a.centro) + '</div></div>' +
+    '<div class="cover-item"><div class="cover-lbl">Tutor del centro</div><div class="cover-val">' + esc(a.tutorCentroNombre) + '</div></div>' +
+    '<div class="cover-item"><div class="cover-lbl">Tutor UNIE</div><div class="cover-val">Bruno Sanchez Gonzalez</div></div>' +
+    '<div class="cover-item"><div class="cover-lbl">Periodo</div><div class="cover-val">' + esc(excelFechaDisplay(a.fInicio)) + ' &mdash; ' + esc(excelFechaDisplay(a.fFin)) + '</div></div>' +
+    '</div></div>' +
+    '<div class="content">' +
+    sections.join('\n') +
+    '<div class="footer"><span>Generado por Agente Tutor UNIE</span><span>' + new Date().toLocaleDateString('es-ES') + '</span></div>' +
+    '</div></div>' +
+    '<button class="print-btn no-print" onclick="window.print()">&#128196; Guardar como PDF</button>' +
+    '</body></html>';
+
+  var ventana = window.open('', '_blank');
+  ventana.document.write(html);
+  ventana.document.close();
 }
 
 pvC(); pvA();
