@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Agente Tutor UNIE - Bruno</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
@@ -246,7 +247,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;font-
                   <button class="btn bs bsm" onclick="cargaAuth()">&#10022; Autorizar</button>
                 </div>
                 <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);">
-                  <button class="btn bg2" style="width:100%;justify-content:center;" onclick="generarPDF()">&#128196; Generar PDF de evidencias</button>
+                  <button class="btn bg2" style="width:100%;justify-content:center;" onclick="generarDOCX()">&#128196; Generar Word de evidencias (.docx)</button>
                 </div>
               </div>
             </div>
@@ -967,13 +968,24 @@ function asuntoC(){
   return 'A/A de "' + tu + '": Contacto para tutor de \u00ab' + alFull + '\u00bb. UNIE';
 }
 
-function abrirMailto(url){
-  var a = document.createElement('a');
-  a.href = url;
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(function(){ document.body.removeChild(a); }, 200);
+function abrirOutlookWeb(dest, asunto, cuerpo){
+  // Outlook Web deep link - works with both Outlook.com and Office 365
+  var base = 'https://outlook.office.com/mail/deeplink/compose';
+  var params = 'to=' + encodeURIComponent(dest) +
+    '&subject=' + encodeURIComponent(asunto) +
+    '&body=' + encodeURIComponent(cuerpo);
+  // Try to open the Outlook Web composer
+  var ventana = window.open(base + '?' + params, '_blank');
+  if(!ventana){
+    // Fallback: mailto for desktop clients
+    var a = document.createElement('a');
+    a.href = 'mailto:' + encodeURIComponent(dest) + '?subject=' + encodeURIComponent(asunto) + '&body=' + encodeURIComponent(cuerpo);
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ document.body.removeChild(a); }, 200);
+    toast('Si no se abre Outlook Web, comprueba que no bloqueas ventanas emergentes');
+  }
 }
 
 function mailtoC(){
@@ -981,10 +993,7 @@ function mailtoC(){
   if(!dest){ toast('Introduce el email del tutor del centro'); return; }
   var asunto = asuntoC();
   var cuerpo = document.getElementById('pvc').textContent;
-  var url = 'mailto:' + encodeURIComponent(dest) +
-    '?subject=' + encodeURIComponent(asunto) +
-    '&body=' + encodeURIComponent(cuerpo);
-  abrirMailto(url);
+  abrirOutlookWeb(dest, asunto, cuerpo);
 }
 
 function cargaCentro(){
@@ -1056,10 +1065,7 @@ function mailtoA(){
     mem: 'Recordatorio entrega memorias MSEC UNIE'
   };
   var tipo = document.getElementById('ca-t').value;
-  var url = 'mailto:' + encodeURIComponent(dest) +
-    '?subject=' + encodeURIComponent(asuntos[tipo]) +
-    '&body=' + encodeURIComponent(document.getElementById('pva').textContent);
-  abrirMailto(url);
+  abrirOutlookWeb(dest, asuntos[tipo], document.getElementById('pva').textContent);
 }
 
 function cargaAlumno(){
@@ -1118,10 +1124,7 @@ function mailtoAuth(){
   if(!dest){ toast('Introduce el email del alumno'); return; }
   var centro = document.getElementById('a-c').value.trim() || '';
   var asunto = 'Autorizacion inicio practicas' + (centro ? ' - ' + centro : '');
-  var url = 'mailto:' + encodeURIComponent(dest) +
-    '?subject=' + encodeURIComponent(asunto) +
-    '&body=' + encodeURIComponent(document.getElementById('pv-auth').textContent);
-  abrirMailto(url);
+  abrirOutlookWeb(dest, asunto, document.getElementById('pv-auth').textContent);
 }
 
 function cargaAuth(){
@@ -1212,257 +1215,98 @@ function toast(m){
 }
 
 
-// ── GENERAR PDF DE EVIDENCIAS ──
-function textoEmailTutor(a, n){
-  var yo    = 'Bruno Sanchez Gonzalez';
-  var email = 'coordinacion.secundaria@universidadunie.com';
-  var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
-  var tu    = a.tutorCentroNombre || '[Tutor del centro]';
-  var cat   = a.cat;
-  if(n === 1){
-    return 'Estimado/a, ' + tu + ':\n\n' +
-      'Estoy encantado de saludarle. Soy ' + yo + ', Tutor Academico de la asignatura de Practicum I y II de Master Universitario de Formacion del Profesorado de la Universidad Internacional de Empresa (UNIE). Soy Tutor del alumno "' + alFull + '", actualmente realizando el periodo de practicas en su centro educativo.\n\n' +
-      'En primer lugar, quisiera agradecerle el esfuerzo y la implicacion en la tutorizacion de nuestro alumnado, sabiendo lo que conlleva este proceso. Las practicas academicas son una herramienta muy importante para la adquisicion de las competencias especificas docentes, demostrando al alumnado la realidad educativa de las aulas. Es por ello por lo que ocupan en UNIE un papel fundamental en la formacion de los estudiantes universitarios.\n\n' +
-      'Por otro lado, sere la persona de contacto en este proceso de practicas, por lo que puedes contar conmigo para solucionar cualquier incidencia y/o problema. El correo de contacto es: ' + email + '\n\n' +
-      'Para tener este primer acercamiento con usted es importante que nos ayude a comenzar con el seguimiento de nuestro alumnado, respondiendo de manera breve estas cuestiones:\n\n' +
-      '- Como esta siendo el desarrollo de las practicas de nuestro alumno/a?\n' +
-      '- Esta acudiendo al centro en el horario establecido?\n' +
-      '- En que titulacion/curso y materias/modulos esta ejecutando sus practicas?\n' +
-      '- Esta cumpliendo con las normas y reglas del centro y con las tareas encomendadas por su parte de manera respetuosa y profesional?\n' +
-      '- Cuales son las fechas de inicio y de finalizacion del alumno en sus practicas? Esta ultima cuestion es para comprobar las fechas en nuestra base de datos.\n\n' +
-      'Quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante este proceso.\n\nMuchas gracias.\n\nReciba un cordial saludo,\n\n' + yo;
-  }
-  if(n === 2){
-    return 'Estimado/a, ' + tu + ':\n\n' +
-      'Me alegro mucho saludarle. Contacto de nuevo con usted para continuar con el seguimiento de nuestro alumnado (' + alFull + '). Para ayudarnos con el proceso, es importante que puedas responder nuevamente y de manera breve, si no es mucha molestia, a las siguientes cuestiones:\n\n' +
-      '- Esta siendo una experiencia satisfactoria para ambas partes (Tutor-Alumno)?\n' +
-      '- Cumple con el horario establecido por el centro de practicas?\n' +
-      '- Tiene buena actitud con el estudiante y con el personal del centro educativo; y tiene buena aptitud docente en el aula, demostrando profesionalidad y rigurosidad academica?\n\n' +
-      'Si existiera algun cambio de fechas en el proceso de practicas del alumnado, le rogamos que nos lo comunique para poder asi modificarlo nosotros tambien en nuestra base de datos.\n\n' +
-      'En la medida de lo posible y en funcion de su disponibilidad, nos gustaria poder realizar una reunion de seguimiento mediante videollamada o contacto telefonico.' +
-      (cat === 'si' ? ' Al tratarse de un centro en Cataluna, esta videollamada es obligatoria segun el protocolo de la Consejeria de Educacion.' : '') + '\n\n' +
-      'Aprovecho este email para adjuntarle el modelo de evaluacion del tutor del centro, el cual se debe de rellenar, firmar y poner el sello del centro para enviarlo de forma escaneada al Coordinador de Practicas. Su email de contacto es: "' + email + '".\n\n' +
-      'Nuevamente, quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante este proceso.\n\nReciba un cordial saludo,\n\n' + yo;
-  }
-  if(n === 3){
-    return 'Estimado/a, ' + tu + ':\n\n' +
-      'Encantado de saludarle de nuevo. Ya hemos llegado al fin de nuestro proceso de seguimiento del periodo de practicas del Master de Formacion del Profesorado.\n\n' +
-      'Desde UNIE queremos agradecerle todo el esfuerzo, apoyo y guia de aprendizaje que ha sido para nuestro alumnado.\n\n' +
-      'Para concluir con este seguimiento agradeceria, si no es mucha molestia, que nos responda a estas cuestiones de manera breve:\n\n' +
-      '- Como ha sido el proceso, en aspectos generales, del alumnado como aspirante a profesor?\n' +
-      '- Cual es el grado de satisfaccion general que tiene con las practicas de este alumno?\n' +
-      '- Ha generado bien clima de aula con sus intervenciones e interacciones tanto con los estudiantes como con el personal del Centro?\n\n' +
-      'Aprovecho tambien este email para adjuntarle el modelo de evaluacion del tutor del centro, el cual se debe de rellenar, firmar y sellar con el sello del centro para enviarlo de forma escaneada al coordinador de Practicas. Su email de contacto es: "' + email + '".\n\n' +
-      'Muchas gracias.\n\nReciba un cordial saludo,\n\n' + yo;
-  }
-  return '';
+
+// ── TEMPLATE DOCX EN BASE64 ──
+var DOCX_TEMPLATE_B64 = "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";
+
+// ── GENERAR DOCX DE EVIDENCIAS ──
+function b64ToUint8(b64){
+  var bin = atob(b64);
+  var arr = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  return arr;
 }
 
-function textoEmailAlumno(a){
-  var yo = 'Bruno Sanchez Gonzalez';
-  var alFull = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
-  return 'Estimado/a, ' + alFull + ':\n\n' +
-    'Encantado de saludarle. Soy ' + yo + ', su Tutor Academico de la Universidad Internacional de Empresa (UNIE). Me pongo en contacto con usted para realizar el seguimiento de sus practicas en el Centro Educativo. Le informo de que me he puesto en contacto con su centro para realizar de manera paralela el mismo seguimiento, acorde con las competencias que tengo como tutor academico.\n\n' +
-    'Como parte del seguimiento del proceso de practicas, me gustaria saber cual es el grado de satisfaccion y de intervencion en su centro educativo. Para ello, es conveniente que responda de manera breve las siguientes cuestiones:\n\n' +
-    '- Como se esta desarrollando sus practicas en el Centro?\n' +
-    '- Estas cumpliendo con el horario establecido o existe alguna modificacion en la misma?\n' +
-    '- Estas cumpliendo con las reglas y normas que vienen dada por el propio centro?\n' +
-    '- Como es el dia a dia en el aula y si te sientes comodo con la labor que estas desempenando?\n' +
-    '- Cual es tu grado de satisfaccion general del desarrollo de tus practicas hasta ahora?\n\n' +
-    'Espero que sus practicas esten siendo satisfactorias le deseo una finalizacion positiva de las mismas.\n\n' +
-    'Recordatorio: toda la documentacion que debe tener en cuenta para el proceso de sus practicas esta colgada en el Campus virtual.\n\n' +
-    'Quedo a su disposicion para aclarar cualquier duda que le pueda surgir durante el proceso.\n\nReciba un cordial saludo,\n\n' + yo;
-}
-
-function emailCard(opts){
-  // opts: {tipo, de, para, cc, asunto, fecha, cuerpo, respuesta}
-  var colorHeader = opts.tipo === 'enviado' ? '#1a4ba8' : '#2d6a4f';
-  var labelHeader = opts.tipo === 'enviado' ? 'EMAIL ENVIADO' : 'RESPUESTA RECIBIDA';
-  var cuerpoHtml = (opts.cuerpo || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-
-  var deHtml = opts.de ? '<tr><td class="eh-k">De:</td><td class="eh-v">' + esc(opts.de) + '</td></tr>' : '';
-  var paraHtml = opts.para ? '<tr><td class="eh-k">Para:</td><td class="eh-v">' + esc(opts.para) + '</td></tr>' : '';
-  var ccHtml = opts.cc ? '<tr><td class="eh-k">CC:</td><td class="eh-v">' + esc(opts.cc) + '</td></tr>' : '';
-  var asuntoHtml = opts.asunto ? '<tr><td class="eh-k">Asunto:</td><td class="eh-v"><strong>' + esc(opts.asunto) + '</strong></td></tr>' : '';
-  var fechaHtml = opts.fecha ? '<tr><td class="eh-k">Fecha:</td><td class="eh-v">' + esc(opts.fecha) + '</td></tr>' : '';
-
-  return '<div class="email-card">' +
-    '<div class="email-header" style="background:' + colorHeader + '">' + labelHeader + '</div>' +
-    '<table class="eh-table">' + deHtml + paraHtml + ccHtml + asuntoHtml + fechaHtml + '</table>' +
-    '<div class="email-body">' + cuerpoHtml + '</div>' +
-  '</div>';
-}
-
-function placeholderCard(label){
-  return '<div class="email-card placeholder-card">' +
-    '<div class="email-header" style="background:#666">RESPUESTA RECIBIDA — PENDIENTE</div>' +
-    '<div class="placeholder-body">[ Pegar aqui captura de pantalla de: ' + esc(label) + ' ]</div>' +
-  '</div>';
-}
-
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function generarPDF(){
+function generarDOCX(){
   if(!aluSel){ toast('Selecciona un alumno primero'); return; }
+  if(typeof JSZip === 'undefined'){ toast('Error: JSZip no cargado. Recarga la pagina.'); return; }
   var a = aluSel;
   var yo      = 'Bruno Sanchez Gonzalez';
   var miEmail = 'bsanchezg@professional.universidadunie.com';
   var alFull  = a.nombre + ' ' + a.ap1 + (a.ap2 ? ' ' + a.ap2 : '');
-  var asuntoBase = 'A/A de "' + a.tutorCentroNombre + '": Contacto para tutor de \u00ab' + alFull + '\u00bb. UNIE';
-  var asuntoAlumno = 'Seguimiento de practicas';
+  var asuntoBase = 'A/A de "' + a.tutorCentroNombre + '": Contacto para tutor de «' + alFull + '». UNIE';
   var fmtF = function(d){
-    if(!d) return '';
+    if(!d) return '[sin fecha registrada]';
     var iso = fechaISO(d);
-    if(!iso) return d;
-    try{ return new Date(iso + 'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+    if(!iso) return String(d);
+    try{ return new Date(iso+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}); }
     catch(e){ return d; }
   };
+  var hoy = new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
 
-  var sections = [];
+  // Generar textos de emails
+  var cuerpo1 = textoEmailTutor(a, 1);
+  var cuerpo2 = textoEmailTutor(a, 2);
+  var cuerpo3 = textoEmailTutor(a, 3);
+  var cuerpoA = textoEmailAlumno(a);
 
-  // ── 1er correo al tutor ──
-  sections.push('<div class="section-title">1. PRIMER CORREO AL TUTOR DEL CENTRO</div>');
-  sections.push(emailCard({
-    tipo: 'enviado',
-    de: yo + ' <' + miEmail + '>',
-    para: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
-    asunto: asuntoBase,
-    fecha: fmtF(a.c1f) || '[fecha de envio]',
-    cuerpo: textoEmailTutor(a, 1)
-  }));
-  if(a.c1r){
-    sections.push(emailCard({
-      tipo: 'recibido',
-      de: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
-      para: yo + ' <' + miEmail + '>',
-      asunto: 'RE: ' + asuntoBase,
-      fecha: fmtF(a.c1r),
-      cuerpo: a.c1o ? 'Observaciones registradas: ' + a.c1o : ''
-    }));
-  } else {
-    sections.push(placeholderCard('Respuesta al 1er correo del tutor del centro'));
-  }
+  // Mapa de placeholders → valores reales
+  var ph = {
+    '%%ALUMNO_NOMBRE%%': alFull,
+    '%%ALUMNO_EMAIL%%':  a.email || '',
+    '%%ESPECIALIDAD%%':  a.esp || '',
+    '%%CENTRO%%':        a.centro || '',
+    '%%TUTOR_NOMBRE%%':  a.tutorCentroNombre || '',
+    '%%TUTOR_EMAIL%%':   a.tutorCentroEmail || '',
+    '%%FECHA_INICIO%%':  excelFechaDisplay(a.fInicio) || '',
+    '%%FECHA_FIN%%':     excelFechaDisplay(a.fFin) || '',
+    '%%ASUNTO%%':        asuntoBase,
+    '%%C1_FECHA%%':      fmtF(a.c1f),
+    '%%C1_CUERPO%%':     cuerpo1,
+    '%%C2_FECHA%%':      fmtF(a.c2f),
+    '%%C2_CUERPO%%':     cuerpo2,
+    '%%C3_FECHA%%':      fmtF(a.c3f),
+    '%%C3_CUERPO%%':     cuerpo3,
+    '%%CA_FECHA%%':      fmtF(a.cAlumno),
+    '%%CA_CUERPO%%':     cuerpoA,
+    '%%GEN_DATE%%':      hoy
+  };
 
-  // ── 2o correo al tutor ──
-  sections.push('<div class="section-title page-break">2. SEGUNDO CORREO AL TUTOR DEL CENTRO</div>');
-  sections.push(emailCard({
-    tipo: 'enviado',
-    de: yo + ' <' + miEmail + '>',
-    para: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
-    asunto: asuntoBase,
-    fecha: fmtF(a.c2f) || '[fecha de envio]',
-    cuerpo: textoEmailTutor(a, 2)
-  }));
-  if(a.c2r){
-    sections.push(emailCard({
-      tipo: 'recibido',
-      de: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
-      para: yo + ' <' + miEmail + '>',
-      asunto: 'RE: ' + asuntoBase,
-      fecha: fmtF(a.c2r),
-      cuerpo: a.c2o ? 'Observaciones registradas: ' + a.c2o : ''
-    }));
-  } else {
-    sections.push(placeholderCard('Respuesta al 2o correo del tutor del centro'));
-  }
+  toast('Generando documento Word...');
 
-  // ── 3er correo al tutor ──
-  sections.push('<div class="section-title page-break">3. TERCER CORREO AL TUTOR DEL CENTRO</div>');
-  sections.push(emailCard({
-    tipo: 'enviado',
-    de: yo + ' <' + miEmail + '>',
-    para: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
-    asunto: asuntoBase,
-    fecha: fmtF(a.c3f) || '[fecha de envio]',
-    cuerpo: textoEmailTutor(a, 3)
-  }));
-  if(a.c3r){
-    sections.push(emailCard({
-      tipo: 'recibido',
-      de: a.tutorCentroNombre + (a.tutorCentroEmail ? ' <' + a.tutorCentroEmail + '>' : ''),
-      para: yo + ' <' + miEmail + '>',
-      asunto: 'RE: ' + asuntoBase,
-      fecha: fmtF(a.c3r),
-      cuerpo: a.c3a ? 'Asiste: ' + a.c3a : ''
-    }));
-  } else {
-    sections.push(placeholderCard('Respuesta al 3er correo del tutor del centro'));
-  }
-
-  // ── Email al alumno ──
-  sections.push('<div class="section-title page-break">4. EMAIL DE SEGUIMIENTO AL ALUMNO</div>');
-  sections.push(emailCard({
-    tipo: 'enviado',
-    de: yo + ' <' + miEmail + '>',
-    para: alFull + (a.email ? ' <' + a.email + '>' : ''),
-    asunto: asuntoAlumno,
-    fecha: fmtF(a.cAlumno) || '[fecha de envio]',
-    cuerpo: textoEmailAlumno(a)
-  }));
-  sections.push(placeholderCard('Respuesta del alumno al email de seguimiento'));
-
-  // ── Videollamada (si aplica) ──
-  if(a.cat === 'si' || a.video){
-    sections.push('<div class="section-title">5. VIDEOLLAMADA DE SEGUIMIENTO' + (a.cat === 'si' ? ' (OBLIGATORIA — CATALUNA)' : '') + '</div>');
-    if(a.video){
-      sections.push('<div class="email-card"><div class="email-header" style="background:#1a4ba8">VIDEOLLAMADA REGISTRADA</div>' +
-        '<div class="email-body"><strong>Fecha:</strong> ' + esc(excelFechaDisplay(a.video)) + '<br><br>' +
-        (a.c2a ? '<strong>Asistio el alumno:</strong> ' + esc(a.c2a) + '<br>' : '') +
-        '</div></div>');
-    } else {
-      sections.push(placeholderCard('Captura de pantalla de la videollamada de seguimiento'));
-    }
-  }
-
-  var html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
-    '<title>Evidencias ' + esc(alFull) + '</title>' +
-    '<style>' +
-    'body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1a1a1a;margin:0;padding:0;background:#f0f0f0;}' +
-    '@media print{body{background:#fff;} .no-print{display:none;} .page-break{page-break-before:always;} html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}' +
-    '.page{max-width:820px;margin:0 auto;background:#fff;padding:0 0 40px 0;}' +
-    '.cover{background:linear-gradient(135deg,#1a3a7a 0%,#2a5ec8 100%);color:#fff;padding:36px 40px 28px;margin-bottom:0;}' +
-    '.cover h1{font-size:18pt;font-weight:700;margin:0 0 6px;}' +
-    '.cover h2{font-size:13pt;font-weight:400;margin:0 0 20px;opacity:.85;}' +
-    '.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-top:16px;}' +
-    '.cover-item{font-size:9.5pt;}' +
-    '.cover-lbl{opacity:.7;font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;}' +
-    '.cover-val{font-weight:600;}' +
-    '.content{padding:0 40px;}' +
-    '.section-title{font-size:10pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1a3a7a;border-bottom:2px solid #1a3a7a;padding:18px 0 6px;margin:24px 0 14px;}' +
-    '.email-card{border:1px solid #d0d5e8;border-radius:6px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);}' +
-    '.email-header{color:#fff;font-size:8.5pt;font-weight:700;letter-spacing:.08em;padding:7px 14px;text-transform:uppercase;}' +
-    '.eh-table{width:100%;border-collapse:collapse;padding:10px 14px;display:table;}' +
-    '.eh-table{padding:0;}' +
-    '.eh-k{font-size:9pt;color:#555;font-weight:600;white-space:nowrap;padding:5px 14px 3px;width:58px;vertical-align:top;}' +
-    '.eh-v{font-size:9.5pt;color:#1a1a1a;padding:5px 14px 3px 0;}' +
-    '.email-body{font-size:9.5pt;line-height:1.6;padding:12px 14px 14px;border-top:1px solid #e8eaf0;white-space:pre-wrap;color:#222;}' +
-    '.placeholder-card .placeholder-body{font-size:9.5pt;color:#888;font-style:italic;padding:28px 14px;text-align:center;border:2px dashed #ccc;margin:10px;border-radius:4px;min-height:80px;display:flex;align-items:center;justify-content:center;}' +
-    '.footer{margin-top:32px;padding-top:14px;border-top:1px solid #ddd;font-size:8.5pt;color:#888;display:flex;justify-content:space-between;}' +
-    '.print-btn{position:fixed;bottom:24px;right:24px;background:#1a4ba8;color:#fff;border:none;border-radius:8px;padding:12px 22px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);}' +
-    '.print-btn:hover{background:#143a8a;}' +
-    '</style></head><body>' +
-    '<div class="page">' +
-    '<div class="cover">' +
-    '<h1>Evidencias de Seguimiento Practicum MSEC 25-26</h1>' +
-    '<h2>Practicas Curriculares I y II &mdash; UNIE</h2>' +
-    '<div class="cover-grid">' +
-    '<div class="cover-item"><div class="cover-lbl">Alumno</div><div class="cover-val">' + esc(alFull) + '</div></div>' +
-    '<div class="cover-item"><div class="cover-lbl">Especialidad</div><div class="cover-val">' + esc(a.esp) + '</div></div>' +
-    '<div class="cover-item"><div class="cover-lbl">Centro de practicas</div><div class="cover-val">' + esc(a.centro) + '</div></div>' +
-    '<div class="cover-item"><div class="cover-lbl">Tutor del centro</div><div class="cover-val">' + esc(a.tutorCentroNombre) + '</div></div>' +
-    '<div class="cover-item"><div class="cover-lbl">Tutor UNIE</div><div class="cover-val">Bruno Sanchez Gonzalez</div></div>' +
-    '<div class="cover-item"><div class="cover-lbl">Periodo</div><div class="cover-val">' + esc(excelFechaDisplay(a.fInicio)) + ' &mdash; ' + esc(excelFechaDisplay(a.fFin)) + '</div></div>' +
-    '</div></div>' +
-    '<div class="content">' +
-    sections.join('\n') +
-    '<div class="footer"><span>Generado por Agente Tutor UNIE</span><span>' + new Date().toLocaleDateString('es-ES') + '</span></div>' +
-    '</div></div>' +
-    '<button class="print-btn no-print" onclick="window.print()">&#128196; Guardar como PDF</button>' +
-    '</body></html>';
-
-  var ventana = window.open('', '_blank');
-  ventana.document.write(html);
-  ventana.document.close();
+  JSZip.loadAsync(b64ToUint8(DOCX_TEMPLATE_B64)).then(function(zip){
+    // Reemplazar placeholders en document.xml
+    return zip.file('word/document.xml').async('string').then(function(xml){
+      Object.keys(ph).forEach(function(k){
+        // Los placeholders pueden quedar fragmentados entre runs de Word
+        // Primero intentamos reemplazo directo, luego escapamos XML
+        var val = ph[k]
+          .replace(/&/g,'&amp;')
+          .replace(/</g,'&lt;')
+          .replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;')
+          // Convertir saltos de línea en elementos w:br de Word
+          .replace(/\n/g,'</w:t><w:br/><w:t xml:space="preserve">');
+        // Reemplazar en el XML (el placeholder está dentro de <w:t>)
+        xml = xml.split(k).join(val);
+      });
+      zip.file('word/document.xml', xml);
+      return zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    });
+  }).then(function(blob){
+    var fname = 'Evidencias_' + alFull.replace(/[^a-zA-Z0-9]/g,'_') + '_' + new Date().toISOString().slice(0,10) + '.docx';
+    var url = URL.createObjectURL(blob);
+    var a2 = document.createElement('a');
+    a2.href = url;
+    a2.download = fname;
+    document.body.appendChild(a2);
+    a2.click();
+    setTimeout(function(){ document.body.removeChild(a2); URL.revokeObjectURL(url); }, 500);
+    toast('Descargado: ' + fname);
+  }).catch(function(err){
+    toast('Error generando docx: ' + err.message);
+    console.error(err);
+  });
 }
 
 pvC(); pvA();
