@@ -957,12 +957,20 @@ function pvC(){
 }
 
 function asuntoC(){
-  var tipo = document.getElementById('cc-t').value;
   var al   = document.getElementById('cc-al').value.trim() || '';
   var alap = document.getElementById('cc-alap').value.trim() || '';
   var alFull = (al + ' ' + alap).trim() || '[Nombre Alumno]';
-  var tu   = document.getElementById('cc-tu').value.trim() || '[Tutor Centro]';
-  return 'A/A de "' + tu + '": Contacto para tutor de ' + alFull + '. UNIE';
+  var tu   = document.getElementById('cc-tu').value.trim() || '[Nombre Tutor del centro]';
+  return 'A/A de "' + tu + '": Contacto para tutor de \u00ab' + alFull + '\u00bb. UNIE';
+}
+
+function abrirMailto(url){
+  var a = document.createElement('a');
+  a.href = url;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ document.body.removeChild(a); }, 200);
 }
 
 function mailtoC(){
@@ -973,7 +981,7 @@ function mailtoC(){
   var url = 'mailto:' + encodeURIComponent(dest) +
     '?subject=' + encodeURIComponent(asunto) +
     '&body=' + encodeURIComponent(cuerpo);
-  window.open(url, '_blank');
+  abrirMailto(url);
 }
 
 function cargaCentro(){
@@ -1048,7 +1056,7 @@ function mailtoA(){
   var url = 'mailto:' + encodeURIComponent(dest) +
     '?subject=' + encodeURIComponent(asuntos[tipo]) +
     '&body=' + encodeURIComponent(document.getElementById('pva').textContent);
-  window.open(url, '_blank');
+  abrirMailto(url);
 }
 
 function cargaAlumno(){
@@ -1110,7 +1118,7 @@ function mailtoAuth(){
   var url = 'mailto:' + encodeURIComponent(dest) +
     '?subject=' + encodeURIComponent(asunto) +
     '&body=' + encodeURIComponent(document.getElementById('pv-auth').textContent);
-  window.open(url, '_blank');
+  abrirMailto(url);
 }
 
 function cargaAuth(){
